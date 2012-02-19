@@ -32,6 +32,7 @@ from qgis.core import *
 from qgis.gui import *
 
 from ui_reporterdialogbase import Ui_ReporterDialog
+import reporter_utils as utils
 
 class ReporterDialog( QDialog, Ui_ReporterDialog ):
   def __init__( self, iface ):
@@ -41,3 +42,30 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.btnOk = self.buttonBox.button( QDialogButtonBox.Ok )
     self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
+
+    QObject.connect( self.btnBrowse, SIGNAL( "clicked()" ), self.setOutDirectory )
+    QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked ( QTreeWidgetItem*, int )" ), self.openConfigDialog )
+
+    self.manageGui()
+
+  def manageGui( self ):
+    self.cmbAnalysisRegion.addItems( utils.getVectorLayersNames( [ QGis.Polygon ] ) )
+    layers = utils.getVectorLayersNames( [ QGis.Polygon ] )
+    for lay in layers:
+      ti = QTreeWidgetItem( self.lstLayers )
+      ti.setText( 0, lay )
+      ti.setCheckState( 0, Qt.Unchecked )
+
+  def setOutDirectory( self ):
+    outDir = utils.getExistingDirectory( self, self.tr( "Select output directory" ) )
+    if outDir:
+      self.leOutputDirectory.setText( outDir )
+
+  def openConfigDialog( self, item, column ):
+    print "CLICKED", item.text( 0 ), column
+
+  def accept( self ):
+    for i in xrange( self.lstLayers.topLevelItemCount() ):
+      item = self.lstLayers.topLevelItem( i )
+      if item.checkState( 0 ) == Qt.Checked:
+        print "ITEM", item.text( 0 )
