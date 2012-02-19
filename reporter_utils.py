@@ -31,6 +31,10 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
+# *****************************************************************************
+# working with layers
+# *****************************************************************************
+
 def getVectorLayerByName( layerName ):
   layerMap = QgsMapLayerRegistry.instance().mapLayers()
   for name, layer in layerMap.iteritems():
@@ -58,14 +62,56 @@ def getVectorLayersNames( vectorTypes = "all" ):
 # various filedialogs
 # *****************************************************************************
 
-def getExistingDirectory( parent, title="Select output directory" ):
+def getExistingDirectory( parent, title = "Select output directory" ):
   settings = QSettings( "NextGIS", "reporter" )
-  lastReportsDir = settings.value( "lastReportsDir", QVariant( "." ) ).toString()
-  d = QFileDialog.getExistingDirectory( parent,
-                                        title,
-                                        lastReportsDir )
+  lastDir = settings.value( "lastReportsDir", QVariant( "." ) ).toString()
+
+  d = QFileDialog.getExistingDirectory( parent, title, lastDir )
+
   if d.isEmpty():
     return None
 
   settings.setValue( "lastReportsDir", d )
   return d
+
+def saveConfigFile( parent, title = "Save configuration", fileFilter = "XML file (*.xml *.XML)" ):
+  settings = QSettings( "NextGIS", "reporter" )
+  lastDir = settings.value( "lastConfigDir", QVariant( "." ) ).toString()
+
+  f = QFileDialog.getSaveFileName( parent, title, lastDir, fileFilter )
+
+  if f.isEmpty():
+    return None
+
+  if not f.toLower().endsWith( ".xml" ):
+    f += ".xml"
+
+  settings.setValue( "lastConfigDir", f )
+  return f
+
+def openConfigFile( parent, title = "Load configuration", fileFilter = "XML file (*.xml *.XML)" ):
+  settings = QSettings( "NextGIS", "reporter" )
+  lastDir = settings.value( "lastConfigDir", QVariant( "." ) ).toString()
+
+  f = QFileDialog.getOpenFileName( parent, title, lastDir, fileFilter )
+
+  if f.isEmpty():
+    return None
+
+  settings.setValue( "lastConfigDir", f )
+  return f
+
+# *****************************************************************************
+# helper xml functions
+# *****************************************************************************
+
+def addConfigEntry( root, name ):
+  pass
+
+def deleteConfigEntry( root, name ):
+  child = root.firstChildElement()
+  while not child.isNull():
+    if child.attribute( "name" ) == name:
+      root.removeChild( child )
+      return
+    child = child.nextSiblingElement()

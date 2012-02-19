@@ -27,6 +27,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtXml import *
 
 from qgis.core import *
 from qgis.gui import *
@@ -40,15 +41,32 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.setupUi( self )
     self.iface = iface
 
+    self.config = None
+    self.cfgRoot = None
+
     self.btnOk = self.buttonBox.button( QDialogButtonBox.Ok )
     self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
 
+    QObject.connect( self.lstLayers, SIGNAL( "itemChanged( QTreeWidgetItem*, int )" ), self.updateConfig )
+    QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked( QTreeWidgetItem*, int )" ), self.openConfigDialog )
+
+    QObject.connect( self.btnNewConfig, SIGNAL( "clicked ()" ), self.newConfiguration )
+    QObject.connect( self.btnLoadConfig, SIGNAL( "clicked ()" ), self.loadConfiguration )
+    QObject.connect( self.btnSaveConfig, SIGNAL( "clicked ()" ), self.saveConfiguration )
+
     QObject.connect( self.btnBrowse, SIGNAL( "clicked()" ), self.setOutDirectory )
-    QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked ( QTreeWidgetItem*, int )" ), self.openConfigDialog )
 
     self.manageGui()
 
   def manageGui( self ):
+    # load settings
+    settings = QSettings( "NextGIS", "reporter" )
+    self.chkUseSelection.setChecked( settings.value( "useSelection", False ).toBool() )
+
+    # setup controls
+    self.btnSaveConfig.setEnabled( False )
+
+    # populate GUI
     self.cmbAnalysisRegion.addItems( utils.getVectorLayersNames( [ QGis.Polygon ] ) )
     layers = utils.getVectorLayersNames( [ QGis.Polygon ] )
     for lay in layers:
@@ -61,10 +79,83 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     if outDir:
       self.leOutputDirectory.setText( outDir )
 
+  def newConfiguration( self ):
+    self.config = QDomDocument( "reporter_config" )
+    self.cfgRoot = self.config.createElement( "reporter_config" )
+    self.config.appendChild( self.cfgRoot )
+
+    # enable save button
+    self.btnSaveConfig.setEnabled( True )
+
+  def loadConfiguration( self ):
+    fileName = utils.openConfigFile( self, self.tr( "Load configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
+    if not fileName:
+      return
+
+    fl = QFile( fileName )
+    if not fl.open( QIODevice.WriteOnly | QIODevice.Text ):
+      QMessageBox.warning( self,
+                           self.tr( "Load error" ),
+                           self.tr( "Cannot read file %1:\n%2." )
+                           .arg( fileName )
+                           .arg( fl.errorString() ) )
+      return
+
+    self.config = QDomDocument()
+    setOk, errorString, errorLine, errorColumn = self.config.setContent( fl, True )
+    if not setOk:
+      QMessageBox.warning( self,
+                           self.tr( "Load error" ),
+                           self.tr( "Parse error at line %1, column %2:\n%3" )
+                           .arg( errorLine )
+                           .arg( errorColumn )
+                           .arg( errorString ) )
+      self.config = None
+      fl.close()
+      return
+
+    fl.close()
+
+    # enable save button
+    self.btnSaveConfig.setEnabled( True )
+
+    self.cfgRoot = doc.documentElement()
+
+    # parse configuration and update UI
+
+  def saveConfiguration( self ):
+    fileName = utils.saveConfigFile( self, self.tr( "Save configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
+    if not fileName:
+      return
+
+    fl = QFile( fileName )
+    if not fl.open( QIODevice.WriteOnly | QIODevice.Text ):
+      QMessageBox.warning( self,
+                           self.tr( "Save error" ),
+                           self.tr( "Cannot write file %1:\n%2." )
+                           .arg( fileName )
+                           .arg( fl.errorString() ) )
+      return
+
+    out = QTextStream( fl )
+    self.config.save( out, 4 )
+    fl.close()
+
   def openConfigDialog( self, item, column ):
-    print "CLICKED", item.text( 0 ), column
+    print "DOUBLECLICKED", column, item.text( 0 )
+
+  def updateConfig( self, item, column ):
+    if item.checkState( 0 ) == Qt.Checked:
+      print "CHECKED", item.text( 0 )
+    else:
+      print "UNCHECKED", item.text( 0 )
 
   def accept( self ):
+    # save settings
+    settings = QSettings( "NextGIS", "reporter" )
+    settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
+
+    # process layers
     for i in xrange( self.lstLayers.topLevelItemCount() ):
       item = self.lstLayers.topLevelItem( i )
       if item.checkState( 0 ) == Qt.Checked:
