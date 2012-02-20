@@ -67,6 +67,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     # setup controls
     self.btnSaveConfig.setEnabled( False )
+    self.lstLayers.setEnabled( False )
 
     # populate GUI
     self.cmbAnalysisRegion.addItems( utils.getVectorLayersNames( [ QGis.Polygon ] ) )
@@ -89,8 +90,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.cfgRoot.setAttribute( "version", "1.0" )
     self.config.appendChild( self.cfgRoot )
 
-    # enable save button
+    # enable controls
     self.btnSaveConfig.setEnabled( True )
+    self.lstLayers.setEnabled( True )
 
   def loadConfiguration( self ):
     fileName = utils.openConfigFile( self, self.tr( "Load configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
@@ -121,9 +123,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     fl.close()
 
-    # enable save button
-    self.btnSaveConfig.setEnabled( True )
-
     # parse configuration and update UI
     self.cfgRoot = self.config.documentElement()
 
@@ -137,6 +136,10 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       child = child.nextSiblingElement()
 
     self.lstLayers.blockSignals( False )
+
+    # enable controls
+    self.btnSaveConfig.setEnabled( True )
+    self.lstLayers.setEnabled( True )
 
   def saveConfiguration( self ):
     fileName = utils.saveConfigFile( self, self.tr( "Save configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
@@ -171,7 +174,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     if not d.exec_() == QDialog.Accepted:
       return
 
-    # update layer config
+    # update layer config if necessary
     if d.areasReport():
       utils.addLayerReport( self.config, layerElement, "area" )
     else:
@@ -190,10 +193,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
   def toggleLayer( self, item, column ):
     if self.config:
       if item.checkState( 0 ) == Qt.Checked:
-        print "ADDED", item.text( 0 )
         utils.addLayerToConfig( self.config, self.cfgRoot, item.text( 0 ) )
       else:
-        print "DELETED", item.text( 0 )
         utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 
   def accept( self ):
