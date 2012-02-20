@@ -33,6 +33,8 @@ from qgis.core import *
 from qgis.gui import *
 
 from ui_reporterdialogbase import Ui_ReporterDialog
+
+import layersettingsdialog
 import reporter_utils as utils
 
 class ReporterDialog( QDialog, Ui_ReporterDialog ):
@@ -155,13 +157,43 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     fl.close()
 
   def openConfigDialog( self, item, column ):
-    print "DOUBLECLICKED", column, item.text( 0 )
+    layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
+    if layerElement == None:
+      return
+
+    d = layersettingsdialog.LayerSettingsDialog( self )
+
+    # update dialog
+    d.setAreasReport( utils.hasReport( layerElement, "area" ) )
+    d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
+    d.setOtherReport( utils.hasReport( layerElement, "other" ) )
+
+    if not d.exec_() == QDialog.Accepted:
+      return
+
+    # update layer config
+    if d.areasReport():
+      utils.addLayerReport( self.config, layerElement, "area" )
+    else:
+      utils.removeLayerReport( layerElement, "area" )
+
+    if d.objectsReport():
+      utils.addLayerReport( self.config, layerElement, "objects" )
+    else:
+      utils.removeLayerReport( layerElement, "objects" )
+
+    if d.otherReport():
+      utils.addLayerReport( self.config, layerElement, "other" )
+    else:
+      utils.removeLayerReport( layerElement, "other" )
 
   def toggleLayer( self, item, column ):
     if self.config:
       if item.checkState( 0 ) == Qt.Checked:
+        print "ADDED", item.text( 0 )
         utils.addLayerToConfig( self.config, self.cfgRoot, item.text( 0 ) )
       else:
+        print "DELETED", item.text( 0 )
         utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 
   def accept( self ):

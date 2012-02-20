@@ -124,3 +124,32 @@ def removeLayerFromConfig( root, layerName ):
       root.removeChild( child )
       return
     child = child.nextSiblingElement()
+
+def findLayerInConfig( root, layerName ):
+  child = root.firstChildElement()
+  while not child.isNull():
+    if child.attribute( "name" ) == layerName:
+      return child
+    child = child.nextSiblingElement()
+  return None
+
+def addLayerReport( doc, elem, rptName ):
+  rpt = doc.createElement( "report" )
+  rpt.setAttribute( "name", rptName )
+  elem.appendChild( rpt )
+
+def removeLayerReport( elem, rptName ):
+  child = elem.firstChildElement()
+  while not child.isNull():
+    if child.attribute( "name" ) == rptName:
+      elem.removeChild( child )
+      return
+    child = child.nextSiblingElement()
+
+def hasReport( elem, rptName ):
+  child = elem.firstChildElement()
+  while not child.isNull():
+    if child.attribute( "name" ) == rptName:
+      return True
+    child = child.nextSiblingElement()
+  return False
