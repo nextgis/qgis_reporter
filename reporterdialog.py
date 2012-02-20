@@ -128,14 +128,22 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.lstLayers.blockSignals( True )
 
+    missedLayers = []
     child = self.cfgRoot.firstChildElement()
     while not child.isNull():
       items = self.lstLayers.findItems( child.attribute( "name" ), Qt.MatchExactly, 0 )
       if len( items ) > 0:
         items[ 0 ].setCheckState( 0, Qt.Checked )
+      else:
+        missedLayers.append( child.attribute( "name" ) )
       child = child.nextSiblingElement()
 
     self.lstLayers.blockSignals( False )
+
+    # config cleanup
+    if len( missedLayers ) > 0:
+      for lay in missedLayers:
+        utils.removeLayerFromConfig( self.cfgRoot, lay )
 
     # enable controls
     self.btnSaveConfig.setEnabled( True )
