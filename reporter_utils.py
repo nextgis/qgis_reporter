@@ -105,13 +105,22 @@ def openConfigFile( parent, title = "Load configuration", fileFilter = "XML file
 # helper xml functions
 # *****************************************************************************
 
-def addConfigEntry( root, name ):
-  pass
-
-def deleteConfigEntry( root, name ):
+def addLayerToConfig( doc, root, layerName ):
+  # first check if layer already in config
   child = root.firstChildElement()
   while not child.isNull():
-    if child.attribute( "name" ) == name:
+    if child.attribute( "name" ) == layerName:
+      return
+    child = child.nextSiblingElement()
+
+  el = doc.createElement( "layer" )
+  el.setAttribute( "name", layerName )
+  root.appendChild( el )
+
+def removeLayerFromConfig( root, layerName ):
+  child = root.firstChildElement()
+  while not child.isNull():
+    if child.attribute( "name" ) == layerName:
       root.removeChild( child )
       return
     child = child.nextSiblingElement()

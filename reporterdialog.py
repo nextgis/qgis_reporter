@@ -47,7 +47,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.btnOk = self.buttonBox.button( QDialogButtonBox.Ok )
     self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
 
-    QObject.connect( self.lstLayers, SIGNAL( "itemChanged( QTreeWidgetItem*, int )" ), self.updateConfig )
+    QObject.connect( self.lstLayers, SIGNAL( "itemChanged( QTreeWidgetItem*, int )" ), self.toggleLayer )
     QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked( QTreeWidgetItem*, int )" ), self.openConfigDialog )
 
     QObject.connect( self.btnNewConfig, SIGNAL( "clicked ()" ), self.newConfiguration )
@@ -69,10 +69,12 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     # populate GUI
     self.cmbAnalysisRegion.addItems( utils.getVectorLayersNames( [ QGis.Polygon ] ) )
     layers = utils.getVectorLayersNames( [ QGis.Polygon ] )
+    self.lstLayers.blockSignals( True )
     for lay in layers:
       ti = QTreeWidgetItem( self.lstLayers )
       ti.setText( 0, lay )
       ti.setCheckState( 0, Qt.Unchecked )
+    self.lstLayers.blockSignals( False )
 
   def setOutDirectory( self ):
     outDir = utils.getExistingDirectory( self, self.tr( "Select output directory" ) )
@@ -82,6 +84,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
   def newConfiguration( self ):
     self.config = QDomDocument( "reporter_config" )
     self.cfgRoot = self.config.createElement( "reporter_config" )
+    self.cfgRoot.setAttribute( "version", "1.0" )
     self.config.appendChild( self.cfgRoot )
 
     # enable save button
@@ -93,7 +96,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       return
 
     fl = QFile( fileName )
-    if not fl.open( QIODevice.WriteOnly | QIODevice.Text ):
+    if not fl.open( QIODevice.ReadOnly | QIODevice.Text ):
       QMessageBox.warning( self,
                            self.tr( "Load error" ),
                            self.tr( "Cannot read file %1:\n%2." )
@@ -119,9 +122,19 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     # enable save button
     self.btnSaveConfig.setEnabled( True )
 
-    self.cfgRoot = doc.documentElement()
-
     # parse configuration and update UI
+    self.cfgRoot = self.config.documentElement()
+
+    self.lstLayers.blockSignals( True )
+
+    child = self.cfgRoot.firstChildElement()
+    while not child.isNull():
+      items = self.lstLayers.findItems( child.attribute( "name" ), Qt.MatchExactly, 0 )
+      if len( items ) > 0:
+        items[ 0 ].setCheckState( 0, Qt.Checked )
+      child = child.nextSiblingElement()
+
+    self.lstLayers.blockSignals( False )
 
   def saveConfiguration( self ):
     fileName = utils.saveConfigFile( self, self.tr( "Save configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
@@ -144,11 +157,12 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
   def openConfigDialog( self, item, column ):
     print "DOUBLECLICKED", column, item.text( 0 )
 
-  def updateConfig( self, item, column ):
-    if item.checkState( 0 ) == Qt.Checked:
-      print "CHECKED", item.text( 0 )
-    else:
-      print "UNCHECKED", item.text( 0 )
+  def toggleLayer( self, item, column ):
+    if self.config:
+      if item.checkState( 0 ) == Qt.Checked:
+        utils.addLayerToConfig( self.config, self.cfgRoot, item.text( 0 ) )
+      else:
+        utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 
   def accept( self ):
     # save settings
