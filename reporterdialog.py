@@ -35,6 +35,7 @@ from qgis.gui import *
 from ui_reporterdialogbase import Ui_ReporterDialog
 
 import layersettingsdialog
+import odfreportwriter
 import reporter_utils as utils
 
 class ReporterDialog( QDialog, Ui_ReporterDialog ):
@@ -232,4 +233,79 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     for i in xrange( self.lstLayers.topLevelItemCount() ):
       item = self.lstLayers.topLevelItem( i )
       if item.checkState( 0 ) == Qt.Checked:
-        print "ITEM", item.text( 0 )
+        print "PROCESSING", item.text( 0 )
+        cLayer = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
+
+        if utils.hasReport( cLayer, "area" ):
+          print "RUN AREA REPORT"
+          self.areaReport( item.text( 0 ) )
+
+  def areaReport( self, layerName ):
+    layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
+    providerA = layerA.dataProvider()
+
+    layerB = utils.getVectorLayerByName( layerName )
+    providerB = layerB.dataProvider()
+
+    # determine classification field
+    renderer = None
+    if layerB.isUsingRendererV2():
+      renderer = layerB.rendererV2()
+
+    if renderer.type() != "categorizedSymbol":
+      print "INVALID RENDERER TYPE"
+      return
+
+    fieldName = renderer.classAttribute()
+    fieldIndex = utils.fieldIndexByName( providerB, fieldName )
+    print "CLASS ATTR", fieldName, fieldIndex
+
+    #~ mLayer = QgsVectorLayer( "Polygon", "tempPoly", "memory" )
+    #~ mProvider = mLayer.dataProvider()
+    #~ mProvider.addAttributes( [ QgsField( "class", QVariant.String ) ] )
+    #~ mLayer.updateFieldMap()
+
+    index = utils.createSpatialIndex( providerB )
+
+    featA = QgsFeature()
+    featB = QgsFeature()
+    outFeat = QgsFeature()
+
+    if self.chkUseSelection.isChecked():
+      pass
+    else:
+      nFeat = providerA.featureCount()
+
+      while providerA.nextFeature( featA ):
+        rptData = dict()
+        geom = QgsGeometry( featA.geometry() )
+        intersects = index.intersects( geom.boundingBox() )
+        for i in intersects:
+          providerB.featureAtId( int( i ), featB , True, [ fieldIndex ] )
+          tmpGeom = QgsGeometry( featB.geometry() )
+
+          if geom.intersects( tmpGeom ):
+            attrMap = featB.attributeMap()
+            intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
+            if intGeom.wkbType() == 7:
+              intCom = geom.combine( tmpGeom )
+              intSym = geom.symDifference( tmpGeom )
+              intGeom = QgsGeometry( intCom.difference( intSym ) )
+
+            if attrMap[0].toString() not in rptData:
+              rptData[ attrMap[0].toString() ] = intGeom.area()
+            else:
+              rptData[ attrMap[0].toString() ] += intGeom.area()
+
+            #~ outFeat.setGeometry( intGeom )
+            #~ outFeat.setAttributeMap( attrMap )
+            #~ mProvider.addFeatures( [ outFeat ] )
+
+    #~ mLayer.updateExtents()
+    #~ QgsMapLayerRegistry.instance().addMapLayer( mLayer )
+        rptData[ "totalArea" ] = geom.area()
+        print "DATA", rptData
+        odfWriter = odfreportwriter.ODFReportWriter()
+        odfWriter.writeTitle( layerName )
+        odfWriter.writeAreaTable( fieldName, rptData )
+        odfWriter.writeToFile( "/home/alex/test.odt" )

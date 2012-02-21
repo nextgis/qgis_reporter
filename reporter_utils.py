@@ -58,6 +58,20 @@ def getVectorLayersNames( vectorTypes = "all" ):
 
   return layerList
 
+def createSpatialIndex( provider ):
+  ft = QgsFeature()
+  index = QgsSpatialIndex()
+
+  provider.rewind()
+  while provider.nextFeature( ft ):
+    index.insertFeature( ft )
+
+  return index
+
+def fieldIndexByName( provider, fieldName ):
+  fMap = provider.fieldNameMap()
+  return fMap[ fieldName ]
+
 # *****************************************************************************
 # various filedialogs
 # *****************************************************************************
