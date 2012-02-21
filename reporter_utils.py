@@ -71,7 +71,7 @@ def getExistingDirectory( parent, title = "Select output directory" ):
   if d.isEmpty():
     return None
 
-  settings.setValue( "lastReportsDir", d )
+  settings.setValue( "lastReportsDir", QFileInfo( d ).absolutePath() )
   return d
 
 def saveConfigFile( parent, title = "Save configuration", fileFilter = "XML file (*.xml *.XML)" ):
@@ -86,7 +86,7 @@ def saveConfigFile( parent, title = "Save configuration", fileFilter = "XML file
   if not f.toLower().endsWith( ".xml" ):
     f += ".xml"
 
-  settings.setValue( "lastConfigDir", f )
+  settings.setValue( "lastConfigDir", QFileInfo( f ).absolutePath() )
   return f
 
 def openConfigFile( parent, title = "Load configuration", fileFilter = "XML file (*.xml *.XML)" ):
@@ -98,7 +98,7 @@ def openConfigFile( parent, title = "Load configuration", fileFilter = "XML file
   if f.isEmpty():
     return None
 
-  settings.setValue( "lastConfigDir", f )
+  settings.setValue( "lastConfigDir", QFileInfo( f ).absolutePath() )
   return f
 
 # *****************************************************************************
@@ -153,3 +153,12 @@ def hasReport( elem, rptName ):
       return True
     child = child.nextSiblingElement()
   return False
+
+def layersWithoutReports( root ):
+  missed = []
+  child = root.firstChildElement()
+  while not child.isNull():
+    if not child.hasChildNodes():
+      missed.append( child.attribute( "name" ) )
+    child = child.nextSiblingElement()
+  return missed

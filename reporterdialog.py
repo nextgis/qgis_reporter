@@ -163,6 +163,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
                            .arg( fl.errorString() ) )
       return
 
+    # cleanup config and update UI
+    self.cleanupConfigAndGui()
+
     out = QTextStream( fl )
     self.config.save( out, 4 )
     fl.close()
@@ -205,7 +208,22 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       else:
         utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 
+  def cleanupConfigAndGui( self ):
+    missedLayers = utils.layersWithoutReports( self.cfgRoot )
+    if len( missedLayers ) > 0:
+      self.lstLayers.blockSignals( True )
+      for lay in missedLayers:
+        utils.removeLayerFromConfig( self.cfgRoot, lay )
+        items = self.lstLayers.findItems( lay, Qt.MatchExactly, 0 )
+        items[ 0 ].setCheckState( 0, Qt.Unchecked )
+      self.lstLayers.blockSignals( False )
+
   def accept( self ):
+    if not self.config:
+      return
+
+    self.cleanupConfigAndGui()
+
     # save settings
     settings = QSettings( "NextGIS", "reporter" )
     settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
