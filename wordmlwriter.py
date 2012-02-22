@@ -37,16 +37,48 @@ class WordMLWriter( QObject ):
   def __init__( self ):
     QObject.__init__( self )
 
-    f = QFile( ":/report_template.xml" )
+    #f = QFile( ":/report_template.xml" )
+    f = QFile( ":/myReportTemplate.xml" )
     f.open( QIODevice.ReadOnly | QIODevice.Text )
     self.report = QString.fromUtf8( f.readAll( ) )
     f.close()
 
-  def addTitle( self ):
-    pass
+  def addTitle( self, layerName ):
+    self.report += '<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
+    self.report += self.tr( '<w:r><w:t>Cool report for layer: </w:t></w:r>' )
+    self.report += QString( '<w:r><w:rPr><w:b/></w:rPr><w:t>%1</w:t></w:r>' ).arg( layerName )
+    self.report += '</w:p>\n'
 
   def addAreaTable( self, fieldName, tableData ):
-    pass
+    # table
+    self.report += '<w:tbl><w:tblPr><w:tblStyle w:val="MyTable"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="01E0"/></w:tblPr>\n'
+    self.report += '<w:tblGrid><w:gridCol w:w="3190"/><w:gridCol w:w="3190"/><w:gridCol w:w="3190"/></w:tblGrid>\n'
+
+    # header
+    self.report += '<w:tr><w:trPr><w:cnfStyle w:val="100000000000"/></w:trPr>\n'
+    self.addAreaTableCell( fieldName )
+    self.addAreaTableCell( self.tr( "Area" ) )
+    self.addAreaTableCell( self.tr( "Percents" ) )
+    self.report += '</w:tr>\n'
+
+    # table data
+    coef = 100.0 / tableData[ "totalArea" ]
+    del tableData[ "totalArea" ]
+    for k, v in tableData.iteritems():
+      self.report += '<w:tr>'
+      self.addAreaTableCell( k )
+      self.addAreaTableCell( v )
+      self.addAreaTableCell( v * coef )
+      self.report += '</w:tr>\n'
+
+    self.report += '</w:tbl>\n'
+
+  def addAreaTableCell( self, cellValue ):
+    self.report += '<w:tc><w:tcPr><w:tcW w:w="3190" w:type="dxa"/></w:tcPr>'
+    self.report += QString( '<w:p><w:r><w:t>%1</w:t></w:r></w:p></w:tc>\n' ).arg( cellValue )
+
+  def closeReport( self ):
+    self.report += "</wx:sect></w:body></w:wordDocument>"
 
   def write( self, fileName ):
     f = QFile( fileName )

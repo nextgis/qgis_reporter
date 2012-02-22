@@ -233,24 +233,45 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     if not self.config:
       return
 
+    if self.leOutput.text().isEmpty():
+      QMessageBox.warning( self,
+                           self.tr( "Reporter" ),
+                           self.tr( "Please specify output report file" ) )
+      return
+
     self.cleanupConfigAndGui()
 
     # save settings
     settings = QSettings( "NextGIS", "reporter" )
     settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
 
+    # init report writer
+    writer = wordmlwriter.WordMLWriter()
+
     # process layers
     for i in xrange( self.lstLayers.topLevelItemCount() ):
       item = self.lstLayers.topLevelItem( i )
-      if item.checkState( 0 ) == Qt.Checked:
-        print "PROCESSING", item.text( 0 )
-        cLayer = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
 
-        if utils.hasReport( cLayer, "area" ):
-          print "RUNNIG AREA REPORT"
-          self.areaReport( item.text( 0 ) )
+      # maybe can be safely removed, because we run check before this
+      if item.checkState( 0 ) == Qt.Unchecked:
+        continue
 
-  def areaReport( self, layerName ):
+      currentLayerName = item.text( 0 )
+      print "processing", item.text( 0 )
+      cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
+
+      # print title
+      writer.addTitle( currentLayerName )
+
+      if utils.hasReport( cLayer, "area" ):
+        print "running area report"
+        self.areaReport( writer, currentLayerName )
+
+    # write report to file
+    writer.closeReport()
+    writer.write( self.leOutput.text() )
+
+  def areaReport( self, writer, layerName ):
     layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     providerA = layerA.dataProvider()
 
@@ -263,12 +284,12 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       renderer = layerB.rendererV2()
 
     if renderer.type() != "categorizedSymbol":
-      print "INVALID RENDERER TYPE"
+      print "Invalid renderer type!"
       return
 
     fieldName = renderer.classAttribute()
     fieldIndex = utils.fieldIndexByName( providerB, fieldName )
-    print "CLASS ATTR", fieldName, fieldIndex
+    print "classification attribute:", fieldName, fieldIndex
 
     #~ mLayer = QgsVectorLayer( "Polygon", "tempPoly", "memory" )
     #~ mProvider = mLayer.dataProvider()
@@ -282,7 +303,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     outFeat = QgsFeature()
 
     if self.chkUseSelection.isChecked():
-      print "Use selection option currently not supported"
+      print "Use selection option currently not supported!"
     else:
       nFeat = providerA.featureCount()
 
@@ -313,5 +334,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     #~ mLayer.updateExtents()
     #~ QgsMapLayerRegistry.instance().addMapLayer( mLayer )
-        rptData[ "totalArea" ] = geom.area()
-        print "DATA", rptData
+    rptData[ "totalArea" ] = geom.area()
+    print "Report data:\n", rptData
+    writer.addAreaTable( fieldName, rptData )

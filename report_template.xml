@@ -9,23 +9,13 @@
    w:embeddedObjPresent="no"
    w:ocxPresent="no"
    xml:space="preserve">
+
   <o:DocumentProperties>
-    <o:Title>This is the title</o:Title>
-    <o:Author>Darl McBride</o:Author>
-    <o:LastAuthor>Bill Gates</o:LastAuthor>
+    <o:Title>Report</o:Title>
+    <o:Author>Cthulhu</o:Author>
     <o:Revision>1</o:Revision>
-    <o:TotalTime>0</o:TotalTime>
-    <o:Created>2007-03-15T23:05:00Z</o:Created>
-    <o:LastSaved>2007-03-15T23:05:00Z</o:LastSaved>
-    <o:Pages>1</o:Pages>
-    <o:Words>6</o:Words>
-    <o:Characters>40</o:Characters>
-    <o:Company>SCO Group, Inc.</o:Company>
-    <o:Lines>1</o:Lines>
-    <o:Paragraphs>1</o:Paragraphs>
-    <o:CharactersWithSpaces>45</o:CharactersWithSpaces>
-    <o:Version>11.6359</o:Version>
   </o:DocumentProperties>
+
   <w:fonts>
     <w:defaultFonts
        w:ascii="Times New Roman"
@@ -33,9 +23,8 @@
        w:h-ansi="Times New Roman"
        w:cs="Times New Roman" />
   </w:fonts>
+
   <w:styles>
-    <w:versionOfBuiltInStylenames w:val="4" />
-    <w:latentStyles w:defLockedState="off" w:latentStyleCount="156" />
     <w:style w:type="paragraph" w:default="on" w:styleId="Normal">
       <w:name w:val="Normal" />
       <w:rPr>
@@ -93,6 +82,7 @@
       <w:semiHidden />
     </w:style>
   </w:styles>
+
   <w:docPr>
     <w:view w:val="print" />
     <w:zoom w:percent="100" />
@@ -115,167 +105,5 @@
       <w:dontGrowAutofit />
     </w:compat>
   </w:docPr>
+
   <w:body>
-    <wx:sect>
-  <w:p>
-    <w:pPr><w:pStyle w:val="Heading1" /></w:pPr>
-    <w:r><w:t>I. Установочные сведения.</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r>
-      <w:rPr><w:b/></w:rPr>
-      <w:t>1. Кадастровый номер ООПТ. </w:t>
-        </w:r>
-    <w:r><w:t>${number}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>2. Название ООПТ. </w:t></w:r>
-    <w:r><w:t>${name}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>3. Код СОАТО (ОКАТО). </w:t></w:r>
-    <w:r><w:t>${okato}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>4. Кластерность. </w:t></w:r>
-    <w:r><w:t>${cluster}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>5. Местоположение ООПТ в структуре  административно-территориального деления. </w:t></w:r>
-    <w:r><w:t>${locate}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>6. Категория ООПТ. </w:t></w:r>
-    <w:r><w:t>${category_name}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>7. Профиль. </w:t></w:r>
-    <w:r><w:t>${profile_name}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>8. Статус. </w:t></w:r>
-    <w:r><w:t>${status_name}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>9. Год создания. </w:t></w:r>
-    <w:r><w:t>${year} г.</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>10. Общая площадь (га). </w:t></w:r>
-    <w:r><w:t>${area} га.</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>11. Нормативная правовая основа функционирования. </w:t></w:r>
-    <w:r><w:t>${norma}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>12. Обоснование создания ООПТ и ее значимость. </w:t></w:r>
-    <w:r><w:t>${osnova}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>13. Сведения о присвоении международных дипломов. </w:t></w:r>
-    <w:r><w:t>${inter}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>14. Перечень основных объектов охраны. </w:t></w:r>
-    <w:r><w:t>${list}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>15. Ведомственная подчиненность. </w:t></w:r>
-    <w:r><w:t>${subst}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>16. Юридический адрес ООПТ. </w:t></w:r>
-    <w:r><w:t>${address}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>17. Наличие подчиненных ООПТ. </w:t></w:r>
-    <w:r><w:t>${substpa}</w:t></w:r>
-  </w:p>
-  <w:p>
-    <w:pPr><w:pStyle w:val="Heading1" /></w:pPr>
-    <w:r><w:t>II. Территориальная структура ООПТ и основные природные характеристики.</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>18. Географическое положение ООПТ. </w:t></w:r>
-    <w:r><w:t>${geogr}</w:t></w:r>
-  </w:p>
-  <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>19. Основные черты природы ООПТ.</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Рельеф: ${relief}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Климат: ${climate}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Растительность: ${veg}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Флора: ${flora}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Фауна: ${fauna}</w:t></w:r></w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>20. Экспликация земель (в процентах и гектарах). </w:t></w:r>
-    <w:r><w:t>${explicat}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>21. Режим и зонирование территории. </w:t></w:r>
-    <w:r><w:t>${zoning}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>22. Режим охранной/буферной зоны. </w:t></w:r>
-    <w:r><w:t>${buffer}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>23. Положение ООПТ в структуре регионального землепользования. </w:t></w:r>
-    <w:r><w:t>${border}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>24. Меры по улучшению состояния ООПТ. </w:t></w:r>
-    <w:r><w:t>${measures}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>25. Предложения об изменении статуса ООПТ и/или установленного режима охраны. </w:t></w:r>
-    <w:r><w:t>${suggest}</w:t></w:r>
-  </w:p>
-  <w:p>
-    <w:pPr><w:pStyle w:val="Heading1" /></w:pPr>
-    <w:r><w:t>III. Организационное и финансовое обеспечение функционирования ООПТ.</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>26. Численность собственного штата. </w:t></w:r>
-    <w:r><w:t>${number}</w:t></w:r>
-  </w:p>
-  <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>27. Юридические (физические) лица, ответственные за обеспечение  охраны  ООПТ.</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Коды: ${codes}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Полный почтовый адрес: ${fulladdr}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Телефон/факс: ${phone}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>E-mail: ${email}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>ФИО (полностью) руководителя: ${fio}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Количество сотрудников этой организации с указанием должностей, обеспечивающих охрану и контроль за состоянием   ООПТ: ${staff}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Кем и когда выдано охранное обязательство: ${protect}</w:t></w:r></w:p>
-  <w:p><w:r><w:t>Охрана ООПТ и его охранной (буферной) зоны: ${protectbuffer}</w:t></w:r></w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>29. Научная деятельность. </w:t></w:r>
-    <w:r><w:t>${science}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>30. Эколого-просветительская и рекреационная деятельность. </w:t></w:r>
-    <w:r><w:t>${educat}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>31. Затраты на содержание ООПТ по типам и источникам финансирования. </w:t></w:r>
-    <w:r><w:t>${cost}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>32. Дополнения и примечания. </w:t></w:r>
-    <w:r><w:t>${add}</w:t></w:r>
-  </w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>33. Составитель. </w:t></w:r>
-    <w:r><w:t>${creator}</w:t></w:r>
-  </w:p>
-  <w:p></w:p>
-  <w:p></w:p>
-  <w:p>
-        <w:r><w:rPr><w:b/></w:rPr><w:t>Проекция: </w:t></w:r>
-    <w:r><w:t>${projection}</w:t></w:r>
-  </w:p>
-  <w:p></w:p>
-  <w:p></w:p>
-    </wx:sect>
-    ${image}
-  </w:body>
-</w:wordDocument>
