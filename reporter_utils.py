@@ -115,6 +115,21 @@ def openConfigFile( parent, title = "Load configuration", fileFilter = "XML file
   settings.setValue( "lastConfigDir", QFileInfo( f ).absolutePath() )
   return f
 
+def saveReportFile( parent, title = "Save report to", fileFilter = "Microsoft Word 2003 (*.doc *.DOC)" ):
+  settings = QSettings( "NextGIS", "reporter" )
+  lastDir = settings.value( "lastReportDir", QVariant( "." ) ).toString()
+
+  f = QFileDialog.getSaveFileName( parent, title, lastDir, fileFilter )
+
+  if f.isEmpty():
+    return None
+
+  if not f.toLower().endsWith( ".doc" ):
+    f += ".doc"
+
+  settings.setValue( "lastReportDir", QFileInfo( f ).absolutePath() )
+  return f
+
 # *****************************************************************************
 # helper xml functions
 # *****************************************************************************

@@ -98,12 +98,12 @@
      <item>
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Output directory</string>
+        <string>Report</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="leOutputDirectory"/>
+      <widget class="QLineEdit" name="leOutput"/>
      </item>
      <item>
       <widget class="QPushButton" name="btnBrowse">

@@ -35,7 +35,7 @@ from qgis.gui import *
 from ui_reporterdialogbase import Ui_ReporterDialog
 
 import layersettingsdialog
-import odfreportwriter
+import wordmlwriter
 import reporter_utils as utils
 
 class ReporterDialog( QDialog, Ui_ReporterDialog ):
@@ -57,11 +57,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     QObject.connect( self.btnLoadConfig, SIGNAL( "clicked ()" ), self.loadConfiguration )
     QObject.connect( self.btnSaveConfig, SIGNAL( "clicked ()" ), self.saveConfiguration )
 
-    QObject.connect( self.btnBrowse, SIGNAL( "clicked()" ), self.setOutDirectory )
+    QObject.connect( self.btnBrowse, SIGNAL( "clicked()" ), self.setOutput )
 
     self.manageGui()
 
   def manageGui( self ):
+    # hide some UI elements
+    self.chkUseSelection.hide()
+
     # load settings
     settings = QSettings( "NextGIS", "reporter" )
     self.chkUseSelection.setChecked( settings.value( "useSelection", False ).toBool() )
@@ -80,10 +83,13 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       ti.setCheckState( 0, Qt.Unchecked )
     self.lstLayers.blockSignals( False )
 
-  def setOutDirectory( self ):
-    outDir = utils.getExistingDirectory( self, self.tr( "Select output directory" ) )
+  def setOutput( self ):
+    #outDir = utils.getExistingDirectory( self, self.tr( "Select output directory" ) )
+    outDir = utils.saveReportFile( self,
+                                   self.tr( "Select output directory" ),
+                                   self.tr( "Micosoft Word 2003 (*.doc *.DOC)" ) )
     if outDir:
-      self.leOutputDirectory.setText( outDir )
+      self.leOutput.setText( outDir )
 
   def newConfiguration( self ):
     self.config = QDomDocument( "reporter_config" )
@@ -96,7 +102,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.lstLayers.setEnabled( True )
 
   def loadConfiguration( self ):
-    fileName = utils.openConfigFile( self, self.tr( "Load configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
+    fileName = utils.openConfigFile( self,
+                                     self.tr( "Load configuration" ),
+                                     self.tr( "XML files (*.xml *.XML)" ) )
     if not fileName:
       return
 
@@ -151,7 +159,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.lstLayers.setEnabled( True )
 
   def saveConfiguration( self ):
-    fileName = utils.saveConfigFile( self, self.tr( "Save configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
+    fileName = utils.saveConfigFile( self,
+                                     self.tr( "Save configuration" ),
+                                     self.tr( "XML files (*.xml *.XML)" ) )
     if not fileName:
       return
 
@@ -237,7 +247,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         cLayer = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
 
         if utils.hasReport( cLayer, "area" ):
-          print "RUN AREA REPORT"
+          print "RUNNIG AREA REPORT"
           self.areaReport( item.text( 0 ) )
 
   def areaReport( self, layerName ):
@@ -272,7 +282,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     outFeat = QgsFeature()
 
     if self.chkUseSelection.isChecked():
-      pass
+      print "Use selection option currently not supported"
     else:
       nFeat = providerA.featureCount()
 
@@ -305,7 +315,3 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     #~ QgsMapLayerRegistry.instance().addMapLayer( mLayer )
         rptData[ "totalArea" ] = geom.area()
         print "DATA", rptData
-        odfWriter = odfreportwriter.ODFReportWriter()
-        odfWriter.writeTitle( layerName )
-        odfWriter.writeAreaTable( fieldName, rptData )
-        odfWriter.writeToFile( "/home/alex/test.odt" )
