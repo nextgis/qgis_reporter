@@ -191,3 +191,45 @@ def layersWithoutReports( root ):
       missed.append( child.attribute( "name" ) )
     child = child.nextSiblingElement()
   return missed
+
+# *****************************************************************************
+# helper map print functions
+# *****************************************************************************
+
+def createMapImage( boundLayer, thematicLayer, rectangle, outPath ):
+  renderer = QgsMapRenderer()
+  renderer.setLayerSet( [ boundLayer.id(), thematicLayer.id() ] )
+  renderer.setExtent( rectangle )
+
+  composition = QgsComposition( renderer )
+  composition.setPlotStyle( QgsComposition.Print )
+
+  x, y = 0, 0
+  w, h = composition.paperWidth() - 33, composition.paperHeight()
+  composerMap = QgsComposerMap( composition, x, y, w, h )
+  composition.addItem( composerMap )
+
+  legend = QgsComposerLegend( composition )
+  legend.model().setLayerSet( renderer.layerSet() )
+  composition.addItem( legend )
+  legend.setItemPosition( composition.paperWidth() - 33, 0 )
+
+  dpi = composition.printResolution()
+  dpmm = dpi / 25.4
+  width = int( dpmm * composition.paperWidth() )
+  height = int( dpmm * composition.paperHeight() )
+
+  # создаём выходное изображение и инициализируем его
+  image = QImage( QSize( width, height ), QImage.Format_ARGB32 )
+  image.setDotsPerMeterX( dpmm * 1000 )
+  image.setDotsPerMeterY( dpmm * 1000 )
+  image.fill( 0 )
+
+  # отрисовываем компоновку
+  imagePainter = QPainter( image )
+  sourceArea = QRectF( 0, 0, composition.paperWidth(), composition.paperHeight() )
+  targetArea = QRectF( 0, 0, width, height )
+  composition.render( imagePainter, targetArea, sourceArea )
+  imagePainter.end()
+
+  image.save( outPath + ".png", "png" )

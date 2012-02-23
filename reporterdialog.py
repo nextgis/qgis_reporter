@@ -245,6 +245,16 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     settings = QSettings( "NextGIS", "reporter" )
     settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
 
+    # get extent of the overlay geometry (for reports)
+    vl = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
+    ft = QgsFeature()
+    vl.featureAtId( 0, ft, True, False )
+    rect = ft.geometry().boundingBox()
+
+    # output dir
+    dirName = QFileInfo( self.leOutput.text() ).absolutePath()
+
+
     # init report writer
     writer = wordmlwriter.WordMLWriter()
 
@@ -260,6 +270,10 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       print "processing", item.text( 0 )
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
+      # create map
+      vlThematic = utils.getVectorLayerByName( currentLayerName )
+      utils.createMapImage( vl, vlThematic, rect, dirName + "/" + currentLayerName )
+
       # print title
       writer.addTitle( currentLayerName )
 
@@ -271,9 +285,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     writer.closeReport()
     writer.write( self.leOutput.text() )
 
+    QMessageBox.information( self,
+                             self.tr( "Reporter" ),
+                             self.tr( "Completed!" ) )
+
   def areaReport( self, writer, layerName ):
     layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     providerA = layerA.dataProvider()
+    providerA.rewind()
 
     layerB = utils.getVectorLayerByName( layerName )
     providerB = layerB.dataProvider()
@@ -306,10 +325,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       print "Use selection option currently not supported!"
     else:
       nFeat = providerA.featureCount()
+      className = None
+
+      rptData = dict()
 
       while providerA.nextFeature( featA ):
-        rptData = dict()
+        rptData.clear()
         geom = QgsGeometry( featA.geometry() )
+        rptData[ "totalArea" ] = geom.area()
         intersects = index.intersects( geom.boundingBox() )
         for i in intersects:
           providerB.featureAtId( int( i ), featB , True, [ fieldIndex ] )
@@ -317,23 +340,27 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
           if geom.intersects( tmpGeom ):
             attrMap = featB.attributeMap()
+            className = attrMap.values()[ 0 ].toString()
             intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
             if intGeom.wkbType() == 7:
               intCom = geom.combine( tmpGeom )
               intSym = geom.symDifference( tmpGeom )
               intGeom = QgsGeometry( intCom.difference( intSym ) )
 
-            if attrMap[0].toString() not in rptData:
-              rptData[ attrMap[0].toString() ] = intGeom.area()
+            if className not in rptData:
+              rptData[ className ] = intGeom.area()
             else:
-              rptData[ attrMap[0].toString() ] += intGeom.area()
+              rptData[ className ] += intGeom.area()
 
             #~ outFeat.setGeometry( intGeom )
             #~ outFeat.setAttributeMap( attrMap )
             #~ mProvider.addFeatures( [ outFeat ] )
 
+        #print "Report data:\n", rptData
+
+        # process only first feature
+        break
+
     #~ mLayer.updateExtents()
     #~ QgsMapLayerRegistry.instance().addMapLayer( mLayer )
-    rptData[ "totalArea" ] = geom.area()
-    print "Report data:\n", rptData
     writer.addAreaTable( fieldName, rptData )

@@ -2,7 +2,6 @@
   <qresource>
     <file>icons/reporter.png</file>
     <file>icons/about.png</file>
-    <file>report_template.xml</file>
     <file>myReportTemplate.xml</file>
   </qresource>
 </RCC>

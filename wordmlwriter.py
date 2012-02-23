@@ -36,12 +36,7 @@ import resources_rc
 class WordMLWriter( QObject ):
   def __init__( self ):
     QObject.__init__( self )
-
-    #f = QFile( ":/report_template.xml" )
-    f = QFile( ":/myReportTemplate.xml" )
-    f.open( QIODevice.ReadOnly | QIODevice.Text )
-    self.report = QString.fromUtf8( f.readAll( ) )
-    f.close()
+    self.report = QString( "" )
 
   def addTitle( self, layerName ):
     self.report += '<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
@@ -71,7 +66,8 @@ class WordMLWriter( QObject ):
       self.addAreaTableCell( v * coef )
       self.report += '</w:tr>\n'
 
-    self.report += '</w:tbl>\n'
+    # close table
+    self.report += '</w:tbl>\n<w:p/>\n'
 
   def addAreaTableCell( self, cellValue ):
     self.report += '<w:tc><w:tcPr><w:tcW w:w="3190" w:type="dxa"/></w:tcPr>'
@@ -81,10 +77,16 @@ class WordMLWriter( QObject ):
     self.report += "</wx:sect></w:body></w:wordDocument>"
 
   def write( self, fileName ):
+    f = QFile( ":/myReportTemplate.xml" )
+    f.open( QIODevice.ReadOnly | QIODevice.Text )
+    reportFooter = QString.fromUtf8( f.readAll( ) )
+    f.close()
+
     f = QFile( fileName )
     if not f.open( QIODevice.WriteOnly | QIODevice.Text ):
       return ( False, f.errorString() )
 
     out = QTextStream( f )
+    out << reportFooter
     out << self.report
     f.close()
