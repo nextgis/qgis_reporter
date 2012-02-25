@@ -212,28 +212,29 @@ def createMapImage( boundLayer, thematicLayer, rectangle, outPath ):
   composition = QgsComposition( renderer )
   composition.setPlotStyle( QgsComposition.Print )
 
-  x, y = 0, 0
-  w, h = composition.paperWidth() - 33, composition.paperHeight()
-  composerMap = QgsComposerMap( composition, x, y, w, h )
-  composition.addItem( composerMap )
-
   legend = QgsComposerLegend( composition )
   legend.model().setLayerSet( renderer.layerSet() )
   composition.addItem( legend )
-  legend.setItemPosition( composition.paperWidth() - 33, 0 )
+  print "****** LEGEND ******", legend.rect().width(), legend.rect().height()
+  #legend.setItemPosition( 0, 0, 50, legend.rect().height() )
+
+  x, y = legend.rect().width(), 0
+  w, h = composition.paperWidth() - legend.rect().width(), composition.paperHeight()
+  composerMap = QgsComposerMap( composition, x, y, w, h )
+  composition.addItem( composerMap )
 
   dpi = composition.printResolution()
   dpmm = dpi / 25.4
   width = int( dpmm * composition.paperWidth() )
   height = int( dpmm * composition.paperHeight() )
 
-  # создаём выходное изображение и инициализируем его
+  # create and init output image
   image = QImage( QSize( width, height ), QImage.Format_ARGB32 )
   image.setDotsPerMeterX( dpmm * 1000 )
   image.setDotsPerMeterY( dpmm * 1000 )
   image.fill( 0 )
 
-  # отрисовываем компоновку
+  # draw composition
   imagePainter = QPainter( image )
   sourceArea = QRectF( 0, 0, composition.paperWidth(), composition.paperHeight() )
   targetArea = QRectF( 0, 0, width, height )

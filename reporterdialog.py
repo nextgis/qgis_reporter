@@ -341,9 +341,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       print "Invalid renderer type!"
       return
 
-    #print "render type", rendererType
-    #print "classification attribute:", fieldName, fieldIndex
-
     index = utils.createSpatialIndex( providerB )
 
     featA = QgsFeature()
