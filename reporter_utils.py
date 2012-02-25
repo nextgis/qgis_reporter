@@ -74,6 +74,12 @@ def fieldIndexByName( provider, fieldName ):
   fMap = provider.fieldNameMap()
   return fMap[ fieldName ]
 
+def fieldNameByIndex( provider, fieldIndex ):
+  fMap = provider.fieldNameMap()
+  for k, v in fMap.iteritems():
+    if v == fieldIndex:
+      return k
+
 # *****************************************************************************
 # various filedialogs
 # *****************************************************************************

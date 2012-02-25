@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>359</width>
-    <height>370</height>
+    <height>405</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -69,6 +69,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="lblProfilePath">
+     <property name="text">
+      <string>Profile</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QPushButton" name="btnNewConfig">
@@ -92,6 +99,20 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="chkCreateMaps">
+     <property name="text">
+      <string>Create thematic maps</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="chkLoadLastProfile">
+     <property name="text">
+      <string>Load last configuration</string>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">

@@ -66,8 +66,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.chkUseSelection.hide()
 
     # load settings
-    settings = QSettings( "NextGIS", "reporter" )
-    self.chkUseSelection.setChecked( settings.value( "useSelection", False ).toBool() )
+    self.readSettings()
 
     # setup controls
     self.btnSaveConfig.setEnabled( False )
@@ -82,6 +81,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       ti.setText( 0, lay )
       ti.setCheckState( 0, Qt.Unchecked )
     self.lstLayers.blockSignals( False )
+
+    if self.chkLoadLastProfile.isChecked() and not self.lblProfilePath.text().isEmpty():
+      self.readConfigurationFile( self.lblProfilePath.text() )
 
   def setOutput( self ):
     #outDir = utils.getExistingDirectory( self, self.tr( "Select output directory" ) )
@@ -108,6 +110,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     if not fileName:
       return
 
+    self.readConfigurationFile( fileName )
+
+  def readConfigurationFile( self, fileName ):
     fl = QFile( fileName )
     if not fl.open( QIODevice.ReadOnly | QIODevice.Text ):
       QMessageBox.warning( self,
@@ -158,6 +163,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.btnSaveConfig.setEnabled( True )
     self.lstLayers.setEnabled( True )
 
+    self.lblProfilePath.setText( fileName )
+
   def saveConfiguration( self ):
     fileName = utils.saveConfigFile( self,
                                      self.tr( "Save configuration" ),
@@ -180,6 +187,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     out = QTextStream( fl )
     self.config.save( out, 4 )
     fl.close()
+
+    self.lblProfilePath.setText( fileName )
 
   def openConfigDialog( self, item, column ):
     layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
@@ -229,6 +238,20 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         items[ 0 ].setCheckState( 0, Qt.Unchecked )
       self.lstLayers.blockSignals( False )
 
+  def readSettings( self ):
+    settings = QSettings( "NextGIS", "reporter" )
+    self.chkUseSelection.setChecked( settings.value( "useSelection", False ).toBool() )
+    self.chkLoadLastProfile.setChecked( settings.value( "loadLastProfile", False ).toBool() )
+    self.chkCreateMaps.setChecked( settings.value( "createMaps", True ).toBool() )
+    self.lblProfilePath.setText( settings.value( "lastProfile", "" ).toString() )
+
+  def saveSettings( self ):
+    settings = QSettings( "NextGIS", "reporter" )
+    settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
+    settings.setValue( "loadLastProfile", self.chkLoadLastProfile.isChecked() )
+    settings.setValue( "createMaps", self.chkCreateMaps.isChecked() )
+    settings.setValue( "lastProfile", self.lblProfilePath.text() )
+
   def accept( self ):
     if not self.config:
       return
@@ -242,8 +265,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.cleanupConfigAndGui()
 
     # save settings
-    settings = QSettings( "NextGIS", "reporter" )
-    settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
+    self.saveSettings()
 
     # get extent of the overlay geometry (for reports)
     vl = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
@@ -253,7 +275,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     # output dir
     dirName = QFileInfo( self.leOutput.text() ).absolutePath()
-
 
     # init report writer
     writer = wordmlwriter.WordMLWriter()
@@ -267,12 +288,13 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         continue
 
       currentLayerName = item.text( 0 )
-      print "processing", item.text( 0 )
+      print "processing", currentLayerName
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
       # create map
-      vlThematic = utils.getVectorLayerByName( currentLayerName )
-      utils.createMapImage( vl, vlThematic, rect, dirName + "/" + currentLayerName )
+      if self.chkCreateMaps.isChecked():
+        vlThematic = utils.getVectorLayerByName( currentLayerName )
+        utils.createMapImage( vl, vlThematic, rect, dirName + "/" + currentLayerName )
 
       # print title
       writer.addTitle( currentLayerName )
@@ -298,22 +320,29 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     providerB = layerB.dataProvider()
 
     # determine classification field
-    renderer = None
+    rendererType = None
+    fieldName = None
+    fieldIndex = None
+
     if layerB.isUsingRendererV2():
       renderer = layerB.rendererV2()
+      rendererType = renderer.type()
 
-    if renderer.type() != "categorizedSymbol":
+      fieldName = renderer.classAttribute()
+      fieldIndex = utils.fieldIndexByName( providerB, fieldName )
+    else:
+      renderer = layerB.renderer()
+      rendererType = renderer.name()
+
+      fieldIndex = renderer.classificationField()
+      fieldName = utils.fieldNameByIndex( providerB, fieldIndex )
+
+    if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
       print "Invalid renderer type!"
       return
 
-    fieldName = renderer.classAttribute()
-    fieldIndex = utils.fieldIndexByName( providerB, fieldName )
-    print "classification attribute:", fieldName, fieldIndex
-
-    #~ mLayer = QgsVectorLayer( "Polygon", "tempPoly", "memory" )
-    #~ mProvider = mLayer.dataProvider()
-    #~ mProvider.addAttributes( [ QgsField( "class", QVariant.String ) ] )
-    #~ mLayer.updateFieldMap()
+    #print "render type", rendererType
+    #print "classification attribute:", fieldName, fieldIndex
 
     index = utils.createSpatialIndex( providerB )
 
@@ -352,15 +381,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
             else:
               rptData[ className ] += intGeom.area()
 
-            #~ outFeat.setGeometry( intGeom )
-            #~ outFeat.setAttributeMap( attrMap )
-            #~ mProvider.addFeatures( [ outFeat ] )
-
-        #print "Report data:\n", rptData
-
         # process only first feature
         break
 
-    #~ mLayer.updateExtents()
-    #~ QgsMapLayerRegistry.instance().addMapLayer( mLayer )
     writer.addAreaTable( fieldName, rptData )
