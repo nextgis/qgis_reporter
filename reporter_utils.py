@@ -31,6 +31,8 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
+import locale
+
 # *****************************************************************************
 # working with layers
 # *****************************************************************************
@@ -56,7 +58,7 @@ def getVectorLayersNames( vectorTypes = "all" ):
       if layer.type() == QgsMapLayer.VectorLayer and layer.geometryType() in vectorTypes:
         layerList.append( unicode( layer.name() ) )
 
-  return layerList
+  return sorted( layerList, cmp=locale.strcoll )
 
 def createSpatialIndex( provider ):
   ft = QgsFeature()
