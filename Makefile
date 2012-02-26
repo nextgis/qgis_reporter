@@ -38,6 +38,7 @@ $(RES_FILES): $(RES_PATH)/%_rc.py: $(RES_PATH)/%.qrc
 clean:
 	rm -f $(ALL_FILES)
 	rm -f *.pyc
+	rm -f *.zip
 
 package:
 	cd .. && rm -f reporter*.zip && zip -r reporter.experimental.zip reporter -x \*.pyc -x \*~ -x \*.git\*
