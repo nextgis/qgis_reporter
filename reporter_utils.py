@@ -215,18 +215,26 @@ def createMapImage( boundLayer, thematicLayer, rectangle, outPath ):
   legend = QgsComposerLegend( composition )
   legend.model().setLayerSet( renderer.layerSet() )
   composition.addItem( legend )
-  print "****** LEGEND ******", legend.rect().width(), legend.rect().height()
-  #legend.setItemPosition( 0, 0, 50, legend.rect().height() )
 
-  x, y = legend.rect().width(), 0
-  w, h = composition.paperWidth() - legend.rect().width(), composition.paperHeight()
-  composerMap = QgsComposerMap( composition, x, y, w, h )
-  composition.addItem( composerMap )
-
+  # an idiotic workaround to get legend size
   dpi = composition.printResolution()
   dpmm = dpi / 25.4
   width = int( dpmm * composition.paperWidth() )
   height = int( dpmm * composition.paperHeight() )
+  image = QImage( QSize( width, height ), QImage.Format_ARGB32 )
+  image.setDotsPerMeterX( dpmm * 1000 )
+  image.setDotsPerMeterY( dpmm * 1000 )
+  legend.paintAndDetermineSize( QPainter( image ) )
+
+  x, y = legend.rect().width(), 0
+  w, h = composition.paperWidth() - x, composition.paperHeight()
+  composerMap = QgsComposerMap( composition, x, y, w, h )
+  composition.addItem( composerMap )
+
+  #dpi = composition.printResolution()
+  #dpmm = dpi / 25.4
+  #width = int( dpmm * composition.paperWidth() )
+  #height = int( dpmm * composition.paperHeight() )
 
   # create and init output image
   image = QImage( QSize( width, height ), QImage.Format_ARGB32 )

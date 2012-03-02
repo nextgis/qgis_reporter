@@ -264,6 +264,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.cleanupConfigAndGui()
 
+    self.btnOk.setEnabled( False )
+
     # save settings
     self.saveSettings()
 
@@ -288,7 +290,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         continue
 
       currentLayerName = item.text( 0 )
-      print "processing", currentLayerName
+      print "processing", unicode( currentLayerName )
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
       # create map
@@ -310,6 +312,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     QMessageBox.information( self,
                              self.tr( "Reporter" ),
                              self.tr( "Completed!" ) )
+
+    self.btnOk.setEnabled( True )
 
   def areaReport( self, writer, layerName ):
     layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
