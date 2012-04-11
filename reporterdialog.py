@@ -243,6 +243,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.chkUseSelection.setChecked( settings.value( "useSelection", False ).toBool() )
     self.chkLoadLastProfile.setChecked( settings.value( "loadLastProfile", False ).toBool() )
     self.chkCreateMaps.setChecked( settings.value( "createMaps", True ).toBool() )
+    self.chkAddMapsToReport.setChecked( settings.value( "mapsInReport", True ).toBool() )
     self.lblProfilePath.setText( settings.value( "lastProfile", "" ).toString() )
 
   def saveSettings( self ):
@@ -250,6 +251,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
     settings.setValue( "loadLastProfile", self.chkLoadLastProfile.isChecked() )
     settings.setValue( "createMaps", self.chkCreateMaps.isChecked() )
+    settings.setValue( "mapsInReport", self.chkAddMapsToReport.isChecked() )
     settings.setValue( "lastProfile", self.lblProfilePath.text() )
 
   def accept( self ):
@@ -388,5 +390,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     writer.addAreaTable( fieldName, rptData )
 
     # add image if requested
-    img = utils.mapForReport( layerA, layerB, rect )
-    writer.addThematicImage( layerName, img )
+    if self.chkAddMapsToReport.isChecked():
+      img = utils.mapForReport( layerA, layerB, rect )
+      writer.addThematicImage( layerName, img )

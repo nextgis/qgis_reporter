@@ -108,6 +108,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="chkAddMapsToReport">
+     <property name="text">
+      <string>Also embed maps in report</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="chkLoadLastProfile">
      <property name="text">
       <string>Load last configuration</string>
