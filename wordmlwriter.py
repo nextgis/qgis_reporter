@@ -73,6 +73,14 @@ class WordMLWriter( QObject ):
     self.report += '<w:tc><w:tcPr><w:tcW w:w="3190" w:type="dxa"/></w:tcPr>'
     self.report += QString( '<w:p><w:r><w:t>%1</w:t></w:r></w:p></w:tc>\n' ).arg( cellValue )
 
+  def addThematicImage( self, layerName, image ):
+    self.report += '<w:p><w:r><w:pict>'
+    self.report += QString( '<w:binData w:name="wordml://%1">' ).arg( layerName )
+    self.report += image
+    self.report += '</w:binData><v:shape id="_x0000_i1025" type="#_x0000_t75" style="width:467pt;height:330.1pt">'
+    self.report += QString( '<v:imagedata src="wordml://%1" o:title="map"/>' ).arg( layerName )
+    self.report += '</v:shape></w:pict></w:r></w:p>'
+
   def closeReport( self ):
     self.report += "</wx:sect></w:body></w:wordDocument>"
 

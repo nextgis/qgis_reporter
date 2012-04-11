@@ -303,7 +303,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       if utils.hasReport( cLayer, "area" ):
         print "running area report"
-        self.areaReport( writer, currentLayerName )
+        self.areaReport( writer, currentLayerName, rect )
 
     # write report to file
     writer.closeReport()
@@ -315,7 +315,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.btnOk.setEnabled( True )
 
-  def areaReport( self, writer, layerName ):
+  def areaReport( self, writer, layerName, rect ):
     layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     providerA = layerA.dataProvider()
     providerA.rewind()
@@ -386,3 +386,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         break
 
     writer.addAreaTable( fieldName, rptData )
+
+    # add image if requested
+    img = utils.mapForReport( layerA, layerB, rect )
+    writer.addThematicImage( layerName, img )
