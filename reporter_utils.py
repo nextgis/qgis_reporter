@@ -204,7 +204,7 @@ def layersWithoutReports( root ):
 # helper map print functions
 # *****************************************************************************
 
-def createMapImage( boundLayer, thematicLayer, rectangle, outPath ):
+def createMapImage( boundLayer, thematicLayer, rectangle, scale, outPath ):
   renderer = QgsMapRenderer()
   renderer.setLayerSet( [ boundLayer.id(), thematicLayer.id() ] )
   renderer.setExtent( rectangle )
@@ -229,7 +229,10 @@ def createMapImage( boundLayer, thematicLayer, rectangle, outPath ):
   x, y = legend.rect().width(), 0
   w, h = composition.paperWidth() - x, composition.paperHeight()
   composerMap = QgsComposerMap( composition, x, y, w, h )
+  #print "*****SCALE BEFORE******", composerMap.scale()
+  #composerMap.setNewScale( scale )
   composition.addItem( composerMap )
+  #print "*****SCALE AFTER******", composerMap.scale()
 
   #dpi = composition.printResolution()
   #dpmm = dpi / 25.4
@@ -251,7 +254,7 @@ def createMapImage( boundLayer, thematicLayer, rectangle, outPath ):
 
   image.save( outPath + ".png", "png" )
 
-def mapForReport( boundLayer, thematicLayer, rectangle ):
+def mapForReport( boundLayer, thematicLayer, rectangle, scale ):
   renderer = QgsMapRenderer()
   renderer.setLayerSet( [ boundLayer.id(), thematicLayer.id() ] )
   renderer.setExtent( rectangle )
@@ -276,6 +279,7 @@ def mapForReport( boundLayer, thematicLayer, rectangle ):
   x, y = legend.rect().width(), 0
   w, h = composition.paperWidth() - x, composition.paperHeight()
   composerMap = QgsComposerMap( composition, x, y, w, h )
+  #composerMap.setNewScale( scale )
   composition.addItem( composerMap )
 
   #dpi = composition.printResolution()

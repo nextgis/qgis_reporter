@@ -95,6 +95,7 @@ class WordMLWriter( QObject ):
       return ( False, f.errorString() )
 
     out = QTextStream( f )
+    out.setCodec( "UTF-8" )
     out << reportFooter
     out << self.report
     f.close()

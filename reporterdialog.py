@@ -292,20 +292,20 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         continue
 
       currentLayerName = item.text( 0 )
-      print "processing", unicode( currentLayerName )
+      #print "processing", unicode( currentLayerName )
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
       # create map
       if self.chkCreateMaps.isChecked():
         vlThematic = utils.getVectorLayerByName( currentLayerName )
-        utils.createMapImage( vl, vlThematic, rect, dirName + "/" + currentLayerName )
+        utils.createMapImage( vl, vlThematic, self.iface.mapCanvas().extent(), self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName )
 
       # print title
       writer.addTitle( currentLayerName )
 
       if utils.hasReport( cLayer, "area" ):
-        print "running area report"
-        self.areaReport( writer, currentLayerName, rect )
+        #print "running area report"
+        self.areaReport( writer, currentLayerName, self.iface.mapCanvas().extent() )
 
     # write report to file
     writer.closeReport()
@@ -344,7 +344,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       fieldName = utils.fieldNameByIndex( providerB, fieldIndex )
 
     if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
-      print "Invalid renderer type!"
+      #print "Invalid renderer type!"
       return
 
     index = utils.createSpatialIndex( providerB )
@@ -354,7 +354,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     outFeat = QgsFeature()
 
     if self.chkUseSelection.isChecked():
-      print "Use selection option currently not supported!"
+      #print "Use selection option currently not supported!"
+      pass
     else:
       nFeat = providerA.featureCount()
       className = None
@@ -391,5 +392,5 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     # add image if requested
     if self.chkAddMapsToReport.isChecked():
-      img = utils.mapForReport( layerA, layerB, rect )
+      img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale() )
       writer.addThematicImage( layerName, img )
