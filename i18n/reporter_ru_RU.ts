@@ -2,6 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="ru_RU">
 <context>
+    <name>LayerSettingsDialog</name>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="14"/>
+        <source>Layer settings</source>
+        <translation>Настройки слоя</translation>
+    </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="20"/>
+        <source>Create table with areas</source>
+        <translation>Создать таблицу площадей</translation>
+    </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="27"/>
+        <source>Extract layer objects</source>
+        <translation>Извлечь объекты слоя</translation>
+    </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="34"/>
+        <source>Some another data</source>
+        <translation>Что-то еще</translation>
+    </message>
+</context>
+<context>
     <name>Reporter</name>
     <message>
         <location filename="reporter.py" line="73"/>

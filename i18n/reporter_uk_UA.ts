@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1">
 <context>
+    <name>LayerSettingsDialog</name>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="14"/>
+        <source>Layer settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="20"/>
+        <source>Create table with areas</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="27"/>
+        <source>Extract layer objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="34"/>
+        <source>Some another data</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Reporter</name>
     <message>
         <location filename="reporter.py" line="73"/>
