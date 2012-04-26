@@ -204,10 +204,16 @@ def layersWithoutReports( root ):
 # helper map print functions
 # *****************************************************************************
 
-def createMapImage( boundLayer, thematicLayer, rectangle, scale, outPath ):
+def createMapImage( boundLayer, thematicLayer, rectangle, scale, outPath, crs, otf ):
   renderer = QgsMapRenderer()
+  renderer.setDestinationCrs( crs )
+  renderer.setProjectionsEnabled( otf )
   renderer.setLayerSet( [ boundLayer.id(), thematicLayer.id() ] )
   renderer.setExtent( rectangle )
+
+  sv = thematicLayer.hasScaleBasedVisibility()
+  if sv:
+    thematicLayer.toggleScaleBasedVisibility( False )
 
   composition = QgsComposition( renderer )
   composition.setPlotStyle( QgsComposition.Print )
@@ -229,15 +235,13 @@ def createMapImage( boundLayer, thematicLayer, rectangle, scale, outPath ):
   x, y = legend.rect().width(), 0
   w, h = composition.paperWidth() - x, composition.paperHeight()
   composerMap = QgsComposerMap( composition, x, y, w, h )
-  #print "*****SCALE BEFORE******", composerMap.scale()
-  #composerMap.setNewScale( scale )
   composition.addItem( composerMap )
-  #print "*****SCALE AFTER******", composerMap.scale()
 
-  #dpi = composition.printResolution()
-  #dpmm = dpi / 25.4
-  #width = int( dpmm * composition.paperWidth() )
-  #height = int( dpmm * composition.paperHeight() )
+  #~ item = QgsComposerScaleBar( composition )
+  #~ item.setStyle( 'Numeric' ) # optionally modify the style
+  #~ item.setComposerMap( composerMap )
+  #~ item.applyDefaultSize()
+  #~ composition.addItem( item )
 
   # create and init output image
   image = QImage( QSize( width, height ), QImage.Format_ARGB32 )
@@ -252,12 +256,21 @@ def createMapImage( boundLayer, thematicLayer, rectangle, scale, outPath ):
   composition.render( imagePainter, targetArea, sourceArea )
   imagePainter.end()
 
+  if sv:
+    thematicLayer.toggleScaleBasedVisibility( sv )
+
   image.save( outPath + ".png", "png" )
 
-def mapForReport( boundLayer, thematicLayer, rectangle, scale ):
+def mapForReport( boundLayer, thematicLayer, rectangle, scale, crs, otf ):
   renderer = QgsMapRenderer()
+  renderer.setDestinationCrs( crs )
+  renderer.setProjectionsEnabled( otf )
   renderer.setLayerSet( [ boundLayer.id(), thematicLayer.id() ] )
   renderer.setExtent( rectangle )
+
+  sv = thematicLayer.hasScaleBasedVisibility()
+  if sv:
+    thematicLayer.toggleScaleBasedVisibility( False )
 
   composition = QgsComposition( renderer )
   composition.setPlotStyle( QgsComposition.Print )
@@ -279,13 +292,7 @@ def mapForReport( boundLayer, thematicLayer, rectangle, scale ):
   x, y = legend.rect().width(), 0
   w, h = composition.paperWidth() - x, composition.paperHeight()
   composerMap = QgsComposerMap( composition, x, y, w, h )
-  #composerMap.setNewScale( scale )
   composition.addItem( composerMap )
-
-  #dpi = composition.printResolution()
-  #dpmm = dpi / 25.4
-  #width = int( dpmm * composition.paperWidth() )
-  #height = int( dpmm * composition.paperHeight() )
 
   # create and init output image
   image = QImage( QSize( width, height ), QImage.Format_ARGB32 )
@@ -304,4 +311,8 @@ def mapForReport( boundLayer, thematicLayer, rectangle, scale ):
   buff = QBuffer( imgData )
   buff.open( QIODevice.WriteOnly )
   image.save( buff, "png" )
+
+  if sv:
+    thematicLayer.toggleScaleBasedVisibility( sv )
+
   return QString.fromLatin1( imgData.toBase64() )

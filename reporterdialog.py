@@ -276,6 +276,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     ft = QgsFeature()
     vl.featureAtId( 0, ft, True, False )
     rect = ft.geometry().boundingBox()
+    t = rect.width() * 0.05
+    rect.setXMinimum( rect.xMinimum() - t )
+    rect.setXMaximum( rect.xMaximum() + t )
+    rect.setYMinimum( rect.yMinimum() - t )
+    rect.setYMaximum( rect.yMaximum() + t )
+
+    crs = self.iface.mapCanvas().mapRenderer().destinationCrs()
+    otf = self.iface.mapCanvas().hasCrsTransformEnabled()
 
     # output dir
     dirName = QFileInfo( self.leOutput.text() ).absolutePath()
@@ -298,14 +306,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       # create map
       if self.chkCreateMaps.isChecked():
         vlThematic = utils.getVectorLayerByName( currentLayerName )
-        utils.createMapImage( vl, vlThematic, self.iface.mapCanvas().extent(), self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName )
+        utils.createMapImage( vl, vlThematic, rect, self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName, crs, otf )
 
       # print title
       writer.addTitle( currentLayerName )
 
       if utils.hasReport( cLayer, "area" ):
         #print "running area report"
-        self.areaReport( writer, currentLayerName, self.iface.mapCanvas().extent() )
+        self.areaReport( writer, currentLayerName, rect, crs, otf )
 
     # write report to file
     writer.closeReport()
@@ -317,7 +325,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.btnOk.setEnabled( True )
 
-  def areaReport( self, writer, layerName, rect ):
+  def areaReport( self, writer, layerName, rect, crs, otf ):
     layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     providerA = layerA.dataProvider()
     providerA.rewind()
@@ -392,5 +400,5 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     # add image if requested
     if self.chkAddMapsToReport.isChecked():
-      img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale() )
+      img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
       writer.addThematicImage( layerName, img )
