@@ -86,7 +86,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       self.readConfigurationFile( self.lblProfilePath.text() )
 
   def setOutput( self ):
-    #outDir = utils.getExistingDirectory( self, self.tr( "Select output directory" ) )
     outDir = utils.saveReportFile( self,
                                    self.tr( "Select output directory" ),
                                    self.tr( "Micosoft Word 2003 (*.doc *.DOC)" ) )
@@ -271,6 +270,15 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     # save settings
     self.saveSettings()
 
+    # get layer count
+    layerCount = 0
+    for i in xrange( self.lstLayers.topLevelItemCount() ):
+      item = self.lstLayers.topLevelItem( i )
+      if item.checkState( 0 ) == Qt.Checked:
+        layerCount += 1
+
+    self.progressBar.setRange( 0, layerCount )
+
     # get extent of the overlay geometry (for reports)
     vl = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     ft = QgsFeature()
@@ -303,6 +311,10 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       #print "processing", unicode( currentLayerName )
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
+      self.progressBar.setFormat( "%p% " + currentLayerName )
+      self.progressBar.setValue( self.progressBar.value() + 1 )
+      QCoreApplication.processEvents()
+
       # create map
       if self.chkCreateMaps.isChecked():
         vlThematic = utils.getVectorLayerByName( currentLayerName )
@@ -319,6 +331,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     writer.closeReport()
     writer.write( self.leOutput.text() )
 
+    self.progressBar.setFormat( "%p%" )
+    self.progressBar.setValue( 0 )
     QMessageBox.information( self,
                              self.tr( "Reporter" ),
                              self.tr( "Completed!" ) )
