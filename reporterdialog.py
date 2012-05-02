@@ -245,6 +245,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.chkAddMapsToReport.setChecked( settings.value( "mapsInReport", True ).toBool() )
     self.lblProfilePath.setText( settings.value( "lastProfile", "" ).toString() )
 
+    # dimensioning buttons
+    if settings.value( "dimensioning", "none" ).toString() == "none":
+      self.rbSimpleUnits.setChecked( True )
+    elif settings.value( "dimensioning", "none" ).toString() == "kilo":
+      self.rbKiloUnits.setChecked( True )
+    else:
+      self.rbMegaUnits.setChecked( True )
+
   def saveSettings( self ):
     settings = QSettings( "NextGIS", "reporter" )
     settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
@@ -252,6 +260,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     settings.setValue( "createMaps", self.chkCreateMaps.isChecked() )
     settings.setValue( "mapsInReport", self.chkAddMapsToReport.isChecked() )
     settings.setValue( "lastProfile", self.lblProfilePath.text() )
+
+    # dimensioning buttons
+    if self.rbSimpleUnits.isChecked():
+      settings.setValue( "dimensioning", "none" )
+    elif self.rbKiloUnits.isChecked():
+      settings.setValue( "dimensioning", "kilo" )
+    else:
+      settings.setValue( "dimensioning", "mega" )
 
   def accept( self ):
     if not self.config:
@@ -318,7 +334,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       # create map
       if self.chkCreateMaps.isChecked():
         vlThematic = utils.getVectorLayerByName( currentLayerName )
-        utils.createMapImage( vl, vlThematic, rect, self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName, crs, otf )
+        #~ utils.createMapImage( vl, vlThematic, rect, self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName, crs, otf )
 
       # print title
       writer.addTitle( currentLayerName )
@@ -343,12 +359,25 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
   def areaReport( self, writer, layerName, rect, crs, otf ):
     layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     providerA = layerA.dataProvider()
-    providerA.rewind()
 
     layerB = utils.getVectorLayerByName( layerName )
     providerB = layerB.dataProvider()
 
+    providerA.rewind()
+    providerA.select( providerA.attributeIndexes() )
+    providerB.rewind()
+    providerB.select( providerB.attributeIndexes() )
+
     crsTransform = QgsCoordinateTransform( layerA.crs(), self.iface.mapCanvas().mapRenderer().destinationCrs() )
+
+    # get dimensioning coefficient
+    coef = 1.0
+    if self.rbSimpleUnits.isChecked():
+      coef = 1.0
+    elif self.rbKiloUnits.isChecked():
+      coef = 0.0001
+    else:
+      coef = 0.0000001
 
     # determine classification field
     rendererType = None
@@ -392,7 +421,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         geom = QgsGeometry( featA.geometry() )
         if geom.transform( crsTransform ) != 0:
           continue
-        rptData[ "totalArea" ] = geom.area()
+        rptData[ "totalArea" ] = float( geom.area() * coef )
         intersects = index.intersects( geom.boundingBox() )
         for i in intersects:
           providerB.featureAtId( int( i ), featB , True, [ fieldIndex ] )
@@ -408,9 +437,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
               intGeom = QgsGeometry( intCom.difference( intSym ) )
 
             if className not in rptData:
-              rptData[ className ] = intGeom.area()
+              rptData[ className ] = float( intGeom.area() * coef )
             else:
-              rptData[ className ] += intGeom.area()
+              rptData[ className ] += float( intGeom.area() * coef )
 
         # process only first feature
         break
@@ -418,6 +447,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     writer.addAreaTable( fieldName, rptData )
 
     # add image if requested
-    if self.chkAddMapsToReport.isChecked():
-      img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
-      writer.addThematicImage( layerName, img )
+    #~ if self.chkAddMapsToReport.isChecked():
+      #~ img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
+      #~ writer.addThematicImage( layerName, img )

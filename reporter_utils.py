@@ -65,6 +65,7 @@ def createSpatialIndex( provider ):
   index = QgsSpatialIndex()
 
   provider.rewind()
+  provider.select()
   while provider.nextFeature( ft ):
     index.insertFeature( ft )
 
