@@ -40,7 +40,6 @@ class WordMLWriter( QObject ):
 
   def addTitle( self, layerName ):
     self.report += '<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
-    self.report += self.tr( '<w:r><w:t>Cool report for layer: </w:t></w:r>' )
     self.report += QString( '<w:r><w:rPr><w:b/></w:rPr><w:t>%1</w:t></w:r>' ).arg( layerName )
     self.report += '</w:p>\n'
 
