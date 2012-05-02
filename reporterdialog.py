@@ -334,7 +334,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       # create map
       if self.chkCreateMaps.isChecked():
         vlThematic = utils.getVectorLayerByName( currentLayerName )
-        #~ utils.createMapImage( vl, vlThematic, rect, self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName, crs, otf )
+        utils.createMapImage( vl, vlThematic, rect, self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName, crs, otf )
 
       # print title
       writer.addTitle( currentLayerName )
@@ -447,6 +447,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     writer.addAreaTable( fieldName, rptData )
 
     # add image if requested
-    #~ if self.chkAddMapsToReport.isChecked():
-      #~ img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
-      #~ writer.addThematicImage( layerName, img )
+    if self.chkAddMapsToReport.isChecked():
+      img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
+      writer.addThematicImage( layerName, img )
