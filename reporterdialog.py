@@ -326,6 +326,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       if utils.hasReport( cLayer, "area" ):
         #print "running area report"
         self.areaReport( writer, currentLayerName, rect, crs, otf )
+        writer.addPageBreak()
 
     # write report to file
     writer.closeReport()

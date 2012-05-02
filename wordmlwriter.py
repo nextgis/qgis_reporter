@@ -80,6 +80,9 @@ class WordMLWriter( QObject ):
     self.report += QString( '<v:imagedata src="wordml://%1" o:title="map"/>' ).arg( layerName )
     self.report += '</v:shape></w:pict></w:r></w:p>'
 
+  def addPageBreak( self ):
+    self.report += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+
   def closeReport( self ):
     self.report += "</wx:sect></w:body></w:wordDocument>"
 
