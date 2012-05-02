@@ -348,6 +348,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     layerB = utils.getVectorLayerByName( layerName )
     providerB = layerB.dataProvider()
 
+    crsTransform = QgsCoordinateTransform( layerA.crs(), self.iface.mapCanvas().mapRenderer().destinationCrs() )
+
     # determine classification field
     rendererType = None
     fieldName = None
@@ -388,6 +390,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       while providerA.nextFeature( featA ):
         rptData.clear()
         geom = QgsGeometry( featA.geometry() )
+        if geom.transform( crsTransform ) != 0:
+          continue
         rptData[ "totalArea" ] = geom.area()
         intersects = index.intersects( geom.boundingBox() )
         for i in intersects:
