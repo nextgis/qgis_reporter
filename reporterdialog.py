@@ -162,7 +162,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.btnSaveConfig.setEnabled( True )
     self.lstLayers.setEnabled( True )
 
-    self.lblProfilePath.setText( fileName )
+    self.lblProfilePath.setText( self.tr( "Config file %1" ).arg( fileName ) )
 
   def saveConfiguration( self ):
     fileName = utils.saveConfigFile( self,
@@ -327,7 +327,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       #print "processing", unicode( currentLayerName )
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
-      self.progressBar.setFormat( "%p% " + currentLayerName )
+      self.progressBar.setFormat( self.tr( "%p% processing: %1" ).arg( currentLayerName ) )
       self.progressBar.setValue( self.progressBar.value() + 1 )
       QCoreApplication.processEvents()
 
@@ -349,6 +349,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     writer.write( self.leOutput.text() )
 
     self.progressBar.setFormat( "%p%" )
+    self.progressBar.setRange( 0, 1)
     self.progressBar.setValue( 0 )
     QMessageBox.information( self,
                              self.tr( "Reporter" ),
