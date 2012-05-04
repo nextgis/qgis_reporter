@@ -325,16 +325,17 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         continue
 
       currentLayerName = item.text( 0 )
-      #print "processing", unicode( currentLayerName )
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
       self.progressBar.setFormat( self.tr( "%p% processing: %1" ).arg( currentLayerName ) )
       QCoreApplication.processEvents()
 
       # create map
+      vlThematic = utils.getVectorLayerByName( currentLayerName )
+      mapImage = utils.createMapImage( vl, vlThematic, rect, crs, otf )
+
       if self.chkCreateMaps.isChecked():
-        vlThematic = utils.getVectorLayerByName( currentLayerName )
-        utils.createMapImage( vl, vlThematic, rect, self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName, crs, otf )
+        mapImage.save( dirName + "/" + currentLayerName + ".png", "png" )
 
       # add page break before new table
       if not isFirst:
@@ -345,7 +346,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       if utils.hasReport( cLayer, "area" ):
         #print "running area report"
-        self.areaReport( writer, currentLayerName, rect, crs, otf )
+        self.areaReport( writer, currentLayerName, mapImage )
         #writer.addPageBreak()
 
       self.progressBar.setValue( self.progressBar.value() + 1 )
@@ -364,7 +365,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.btnOk.setEnabled( True )
 
-  def areaReport( self, writer, layerName, rect, crs, otf ):
+  def areaReport( self, writer, layerName, image ):
     layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     providerA = layerA.dataProvider()
 
@@ -456,5 +457,10 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     # add image if requested
     if self.chkAddMapsToReport.isChecked():
-      img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
-      writer.addThematicImage( layerName, img )
+      #img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
+      imgData = QByteArray()
+      buff = QBuffer( imgData )
+      buff.open( QIODevice.WriteOnly )
+      image.save( buff, "png" )
+
+      writer.addThematicImage( layerName, QString.fromLatin1( imgData.toBase64() ) )
