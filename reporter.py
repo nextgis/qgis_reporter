@@ -6,7 +6,7 @@
 # ---------------------------------------------------------
 # Generates reports.
 #
-# Copyright (C) 2012 Alexander Bruy (alexander.bruy@gmail.com), NextGIS
+# Copyright (C) 2012 NextGIS, http://nextgis.org
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -75,9 +75,9 @@ class ReporterPlugin( object ):
                            QCoreApplication.translate( "Reporter", "This version of Reporter requires at least QGIS version 1.0.0\nPlugin will not be enabled." ) )
       return None
 
-    self.actionRun = QAction( QIcon( ":/icons/reporter.png" ), "Reporter", self.iface.mainWindow() )
+    self.actionRun = QAction( QIcon( ":/icons/reporter.png" ), "Taimyr - Reporter", self.iface.mainWindow() )
     self.actionRun.setStatusTip( QCoreApplication.translate( "Reporter", "Generates report" ) )
-    self.actionAbout = QAction( QIcon( ":/icons/about.png" ), "About Reporter", self.iface.mainWindow() )
+    self.actionAbout = QAction( QIcon( ":/icons/about.png" ), "About Taimyr - Reporter", self.iface.mainWindow() )
 
     QObject.connect( self.actionRun, SIGNAL( "triggered()" ), self.run )
     QObject.connect( self.actionAbout, SIGNAL( "triggered()" ), self.about )
@@ -103,9 +103,9 @@ class ReporterPlugin( object ):
 
   def about( self ):
     dlgAbout = QDialog()
-    dlgAbout.setWindowTitle( QApplication.translate( "Reporter", "About Reporter" ) )
+    dlgAbout.setWindowTitle( QApplication.translate( "Reporter", "About Taimyr - Reporter" ) )
     lines = QVBoxLayout( dlgAbout )
-    title = QLabel( QApplication.translate( "Reporter", "<b>Reporter</b>" ) )
+    title = QLabel( QApplication.translate( "Reporter", "<b>Taimyr - Reporter</b>" ) )
     title.setAlignment( Qt.AlignHCenter | Qt.AlignVCenter )
     lines.addWidget( title )
     ver = QLabel( QApplication.translate( "Reporter", "Version: %1" ).arg( version() ) )
@@ -113,7 +113,7 @@ class ReporterPlugin( object ):
     lines.addWidget( ver )
     lines.addWidget( QLabel( QApplication.translate( "Reporter", "Generates report." ) ) )
     lines.addWidget( QLabel( QApplication.translate( "Reporter", "<b>Developers:</b>" ) ) )
-    lines.addWidget( QLabel( "  Alexander Bruy (NextGIS)" ) )
+    lines.addWidget( QLabel( "  NextGIS, http://nextgis.org" ) )
     lines.addWidget( QLabel( QApplication.translate( "Reporter", "<b>Homepage:</b>") ) )
 
     overrideLocale = QSettings().value( "locale/overrideFlag", QVariant( False ) ).toBool()

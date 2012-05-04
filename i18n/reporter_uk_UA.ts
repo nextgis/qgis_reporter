@@ -17,11 +17,6 @@
         <source>Extract layer objects</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="layersettingsdialogbase.ui" line="34"/>
-        <source>Some another data</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Reporter</name>
@@ -44,16 +39,6 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporter.py" line="101"/>
         <source>Reporter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="reporter.py" line="106"/>
-        <source>About Reporter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="reporter.py" line="108"/>
-        <source>&lt;b&gt;Reporter&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -81,11 +66,21 @@ Plugin will not be enabled.</source>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="reporter.py" line="106"/>
+        <source>About Taimyr - Reporter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="reporter.py" line="108"/>
+        <source>&lt;b&gt;Taimyr - Reporter&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="354"/>
+        <location filename="reporterdialog.py" line="364"/>
         <source>Reporter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -203,12 +198,12 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="277"/>
+        <location filename="reporterdialog.py" line="280"/>
         <source>Please specify output report file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="354"/>
+        <location filename="reporterdialog.py" line="364"/>
         <source>Completed!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -233,23 +228,33 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="185"/>
-        <source>10^3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="reporterdialogbase.ui" line="192"/>
         <source>10^6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="165"/>
-        <source>Config file %1</source>
+        <location filename="reporterdialog.py" line="332"/>
+        <source>%p% processing: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="330"/>
-        <source>%p% processing: %1</source>
+        <location filename="reporterdialogbase.ui" line="14"/>
+        <source>Taimyr - Reporter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="reporterdialogbase.ui" line="185"/>
+        <source>10^4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="reporterdialog.py" line="247"/>
+        <source>Config file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="reporterdialog.py" line="249"/>
+        <source>No profile loaded</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

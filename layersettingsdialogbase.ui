@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>291</width>
-    <height>130</height>
+    <height>105</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,13 +25,6 @@
     <widget class="QCheckBox" name="chkObjectsTable">
      <property name="text">
       <string>Extract layer objects</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="chkOtherData">
-     <property name="text">
-      <string>Some another data</string>
      </property>
     </widget>
    </item>

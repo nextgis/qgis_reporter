@@ -6,7 +6,7 @@
 # ---------------------------------------------------------
 # Generates reports.
 #
-# Copyright (C) 2012 Alexander Bruy (alexander.bruy@gmail.com), NextGIS
+# Copyright (C) 2012 NextGIS, http://nextgis.org
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -26,7 +26,7 @@
 #******************************************************************************
 
 def name():
-  return "Reporter"
+  return "Taimyr - Reporter"
 
 def description():
   return "Generates reports"
@@ -41,7 +41,7 @@ def qgisMinimumVersion():
   return "1.0.0"
 
 def authorName():
-  return "Alexander Bruy (NextGIS)"
+  return "NextGIS"
 
 def icon():
   return "icons/reporter.png"

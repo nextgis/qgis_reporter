@@ -21,7 +21,7 @@
     <message>
         <location filename="layersettingsdialogbase.ui" line="34"/>
         <source>Some another data</source>
-        <translation>Что-то еще</translation>
+        <translation type="obsolete">Что-то еще</translation>
     </message>
 </context>
 <context>
@@ -51,12 +51,12 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporter.py" line="106"/>
         <source>About Reporter</source>
-        <translation>О Reporter</translation>
+        <translation type="obsolete">О Reporter</translation>
     </message>
     <message>
         <location filename="reporter.py" line="108"/>
         <source>&lt;b&gt;Reporter&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Reporter&lt;/b&gt;</translation>
+        <translation type="obsolete">&lt;b&gt;Reporter&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="reporter.py" line="111"/>
@@ -83,11 +83,21 @@ Plugin will not be enabled.</source>
         <source>Close</source>
         <translation>Закрыть</translation>
     </message>
+    <message>
+        <location filename="reporter.py" line="106"/>
+        <source>About Taimyr - Reporter</source>
+        <translation>О Taimyr - Reporter</translation>
+    </message>
+    <message>
+        <location filename="reporter.py" line="108"/>
+        <source>&lt;b&gt;Taimyr - Reporter&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Taimyr - Reporter&lt;/b&gt;</translation>
+    </message>
 </context>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="354"/>
+        <location filename="reporterdialog.py" line="364"/>
         <source>Reporter</source>
         <translation>Reporter</translation>
     </message>
@@ -208,12 +218,12 @@ Plugin will not be enabled.</source>
 %2.</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="277"/>
+        <location filename="reporterdialog.py" line="280"/>
         <source>Please specify output report file</source>
         <translation>Пожалуйста укажите файл отчета</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="354"/>
+        <location filename="reporterdialog.py" line="364"/>
         <source>Completed!</source>
         <translation>Завершено!</translation>
     </message>
@@ -238,11 +248,6 @@ Plugin will not be enabled.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="185"/>
-        <source>10^3</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="reporterdialogbase.ui" line="192"/>
         <source>10^6</source>
         <translation></translation>
@@ -250,12 +255,32 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporterdialog.py" line="165"/>
         <source>Config file %1</source>
-        <translation>Файл настроек %1</translation>
+        <translation type="obsolete">Файл настроек %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="330"/>
+        <location filename="reporterdialog.py" line="332"/>
         <source>%p% processing: %1</source>
         <translation>%p% обработка: %1</translation>
+    </message>
+    <message>
+        <location filename="reporterdialogbase.ui" line="14"/>
+        <source>Taimyr - Reporter</source>
+        <translation>Taimyr - Reporter</translation>
+    </message>
+    <message>
+        <location filename="reporterdialogbase.ui" line="185"/>
+        <source>10^4</source>
+        <translation>10^4</translation>
+    </message>
+    <message>
+        <location filename="reporterdialog.py" line="247"/>
+        <source>Config file: %1</source>
+        <translation>Файл настроек: %1</translation>
+    </message>
+    <message>
+        <location filename="reporterdialog.py" line="249"/>
+        <source>No profile loaded</source>
+        <translation>Профиль не загружен</translation>
     </message>
 </context>
 <context>

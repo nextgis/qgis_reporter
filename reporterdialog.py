@@ -6,7 +6,7 @@
 # ---------------------------------------------------------
 # Generates reports.
 #
-# Copyright (C) 2012 Alexander Bruy (alexander.bruy@gmail.com), NextGIS
+# Copyright (C) 2012 NextGIS, http://nextgis.org
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -243,7 +243,10 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.chkLoadLastProfile.setChecked( settings.value( "loadLastProfile", False ).toBool() )
     self.chkCreateMaps.setChecked( settings.value( "createMaps", True ).toBool() )
     self.chkAddMapsToReport.setChecked( settings.value( "mapsInReport", True ).toBool() )
-    self.lblProfilePath.setText( self.tr( "Config file: %1" ) .arg( settings.value( "lastProfile", "" ).toString() ) )
+    if self.chkLoadLastProfile.isChecked():
+      self.lblProfilePath.setText( self.tr( "Config file: %1" ) .arg( settings.value( "lastProfile", "" ).toString() ) )
+    else:
+      self.lblProfilePath.setText( self.tr( "No profile loaded" ) )
 
     # dimensioning buttons
     if settings.value( "dimensioning", "none" ).toString() == "none":
@@ -259,7 +262,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     settings.setValue( "loadLastProfile", self.chkLoadLastProfile.isChecked() )
     settings.setValue( "createMaps", self.chkCreateMaps.isChecked() )
     settings.setValue( "mapsInReport", self.chkAddMapsToReport.isChecked() )
-    settings.setValue( "lastProfile", self.lblProfilePath.text() )
+    settings.setValue( "lastProfile", self.lblProfilePath.text().split( ": " )[ 1 ] )
 
     # dimensioning buttons
     if self.rbSimpleUnits.isChecked():
@@ -320,7 +323,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     for i in xrange( self.lstLayers.topLevelItemCount() ):
       item = self.lstLayers.topLevelItem( i )
 
-      # maybe can be safely removed, because we run check before this
       if item.checkState( 0 ) == Qt.Unchecked:
         continue
 
@@ -341,13 +343,13 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       if not isFirst:
         writer.addPageBreak()
 
+      isFirst = False
+
       # print title
       writer.addTitle( currentLayerName )
 
       if utils.hasReport( cLayer, "area" ):
-        #print "running area report"
         self.areaReport( writer, currentLayerName, mapImage )
-        #writer.addPageBreak()
 
       self.progressBar.setValue( self.progressBar.value() + 1 )
       QCoreApplication.processEvents()
@@ -457,7 +459,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     # add image if requested
     if self.chkAddMapsToReport.isChecked():
-      #img = utils.mapForReport( layerA, layerB, rect, self.iface.mapCanvas().scale(), crs, otf )
       imgData = QByteArray()
       buff = QBuffer( imgData )
       buff.open( QIODevice.WriteOnly )
