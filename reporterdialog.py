@@ -316,6 +316,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     writer = wordmlwriter.WordMLWriter()
 
     # process layers
+    isFirst = True
     for i in xrange( self.lstLayers.topLevelItemCount() ):
       item = self.lstLayers.topLevelItem( i )
 
@@ -335,13 +336,17 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         vlThematic = utils.getVectorLayerByName( currentLayerName )
         utils.createMapImage( vl, vlThematic, rect, self.iface.mapCanvas().scale(), dirName + "/" + currentLayerName, crs, otf )
 
+      # add page break before new table
+      if not isFirst:
+        writer.addPageBreak()
+
       # print title
       writer.addTitle( currentLayerName )
 
       if utils.hasReport( cLayer, "area" ):
         #print "running area report"
         self.areaReport( writer, currentLayerName, rect, crs, otf )
-        writer.addPageBreak()
+        #writer.addPageBreak()
 
       self.progressBar.setValue( self.progressBar.value() + 1 )
       QCoreApplication.processEvents()
