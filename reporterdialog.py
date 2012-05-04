@@ -328,7 +328,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
 
       self.progressBar.setFormat( self.tr( "%p% processing: %1" ).arg( currentLayerName ) )
-      self.progressBar.setValue( self.progressBar.value() + 1 )
       QCoreApplication.processEvents()
 
       # create map
@@ -343,6 +342,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         #print "running area report"
         self.areaReport( writer, currentLayerName, rect, crs, otf )
         writer.addPageBreak()
+
+      self.progressBar.setValue( self.progressBar.value() + 1 )
+      QCoreApplication.processEvents()
 
     # write report to file
     writer.closeReport()
@@ -376,7 +378,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     if self.rbSimpleUnits.isChecked():
       coef = 1.0
     elif self.rbKiloUnits.isChecked():
-      coef = 0.0001
+      coef = 0.00001
     else:
       coef = 0.0000001
 

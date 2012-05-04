@@ -182,7 +182,7 @@
           <item>
            <widget class="QRadioButton" name="rbKiloUnits">
             <property name="text">
-             <string>10^3</string>
+             <string>10^4</string>
             </property>
            </widget>
           </item>
