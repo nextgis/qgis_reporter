@@ -83,7 +83,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.lstLayers.blockSignals( False )
 
     if self.chkLoadLastProfile.isChecked() and not self.lblProfilePath.text().isEmpty():
-      self.readConfigurationFile( self.lblProfilePath.text() )
+      self.readConfigurationFile( self.lblProfilePath.text().split( ": " )[ 1 ] )
 
   def setOutput( self ):
     outDir = utils.saveReportFile( self,
@@ -162,7 +162,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.btnSaveConfig.setEnabled( True )
     self.lstLayers.setEnabled( True )
 
-    self.lblProfilePath.setText( self.tr( "Config file %1" ).arg( fileName ) )
+    self.lblProfilePath.setText( self.tr( "Config file: %1" ).arg( fileName ) )
 
   def saveConfiguration( self ):
     fileName = utils.saveConfigFile( self,
@@ -243,7 +243,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.chkLoadLastProfile.setChecked( settings.value( "loadLastProfile", False ).toBool() )
     self.chkCreateMaps.setChecked( settings.value( "createMaps", True ).toBool() )
     self.chkAddMapsToReport.setChecked( settings.value( "mapsInReport", True ).toBool() )
-    self.lblProfilePath.setText( settings.value( "lastProfile", "" ).toString() )
+    self.lblProfilePath.setText( self.tr( "Config file: %1" ) .arg( settings.value( "lastProfile", "" ).toString() ) )
 
     # dimensioning buttons
     if settings.value( "dimensioning", "none" ).toString() == "none":
