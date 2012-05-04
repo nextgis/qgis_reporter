@@ -253,4 +253,17 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>WordMLWriter</name>
+    <message>
+        <location filename="wordmlwriter.py" line="54"/>
+        <source>Area</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="wordmlwriter.py" line="55"/>
+        <source>Percents</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

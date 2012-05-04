@@ -258,4 +258,17 @@ Plugin will not be enabled.</source>
         <translation>%p% обработка: %1</translation>
     </message>
 </context>
+<context>
+    <name>WordMLWriter</name>
+    <message>
+        <location filename="wordmlwriter.py" line="54"/>
+        <source>Area</source>
+        <translation>Площадь</translation>
+    </message>
+    <message>
+        <location filename="wordmlwriter.py" line="55"/>
+        <source>Percents</source>
+        <translation>% площади</translation>
+    </message>
+</context>
 </TS>

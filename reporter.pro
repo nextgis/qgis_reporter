@@ -1,6 +1,7 @@
 SOURCES = __init__.py \
           reporter.py \
-          reporterdialog.py
+          reporterdialog.py \
+          wordmlwriter.py
 
 FORMS = reporterdialogbase.ui \
         layersettingsdialogbase.ui
