@@ -188,7 +188,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.config.save( out, 4 )
     fl.close()
 
-    self.lblProfilePath.setText( fileName )
+    self.lblProfilePath.setText( self.tr( "Config file: %1" ).arg( fileName ) )
 
   def openConfigDialog( self, item, column ):
     layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
@@ -291,248 +291,172 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         layerCount += 1
         layerNames.append( item.text( 0 ) )
 
-
-    print "LAYER COUNT", layerCount
     self.progressBar.setRange( 0, layerCount )
 
     QApplication.setOverrideCursor( QCursor( Qt.WaitCursor ) )
     self.btnOk.setEnabled( False )
 
-    self.workThread = reporterthread.ReporterThread( layerNames,
-                                                     self.cmbAnalysisRegion.currentText(),
-                                                     self.iface.mapCanvas().mapRenderer().destinationCrs(),
-                                                     self.iface.mapCanvas().hasCrsTransformEnabled(),
-                                                     self.cfgRoot,
-                                                     self.leOutput.text() )
-    QObject.connect( self.workThread, SIGNAL( "updateProgress()" ), self.updateProgress )
-    QObject.connect( self.workThread, SIGNAL( "processFinished()" ), self.processFinished )
-    QObject.connect( self.workThread, SIGNAL( "processInterrupted()" ), self.processInterrupted )
+    # ***************** create report ************************
+    overlayLayer = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
+    overlayProvider = overlayLayer.dataProvider()
 
-    self.btnClose.setText( self.tr( "Cancel" ) )
-    QObject.disconnect( self.buttonBox, SIGNAL( "rejected()" ), self.reject )
-    QObject.connect( self.btnClose, SIGNAL( "clicked()" ), self.stopProcessing )
+    isFirst = True
+    mapCRS = self.iface.mapCanvas().mapRenderer().destinationCrs()
+    hasOTFR = self.iface.mapCanvas().hasCrsTransformEnabled()
+    crsTransform = QgsCoordinateTransform( overlayLayer.crs(), mapCRS )
+    needTransform = ( overlayLayer.crs() != mapCRS )
+    dirName = QFileInfo( self.leOutput.text() ).absolutePath()
 
-    self.workThread.start()
+    # get dimensioning coefficient
+    coef = 1.0
+    settings = QSettings( "NextGIS", "reporter" )
+    if settings.value( "dimensioning", "none" ).toString() == "none":
+      coef = 1.0
+    elif settings.value( "dimensioning", "none" ).toString() == "kilo":
+      coef = 0.00001
+    else:
+      coef = 0.0000001
 
-  def updateProgress( self ):
-    print "UPDATE PROGRESS", self.progressBar.value(), self.progressBar.value() + 1
-    self.progressBar.setValue( self.progressBar.value() + 1 )
+    # variables to store information used in reports
+    dataArea = dict()
+    dataObjects = dict()
 
-  def processFinished( self ):
-    self.stopProcessing()
-    self.restoreGui()
+    # init report writer
+    writer = wordmlwriter.WordMLWriter()
 
-  def processInterrupted( self ):
-    self.restoreGui()
+    for layerName in layerNames:
+      self.progressBar.setFormat( self.tr( "%p% processing: %1" ).arg( layerName ) )
+      QCoreApplication.processEvents()
 
-  def stopProcessing( self ):
-    if self.workThread != None:
-      self.workThread.stop()
-      self.workThread = None
+      vLayer = utils.getVectorLayerByName( layerName )
+      vProvider = vLayer.dataProvider()
 
-  def restoreGui( self ):
+      vProvider.rewind()
+      vProvider.select( vProvider.attributeIndexes() )
+
+      # check layer renderer and determine classification field
+      rendererType = None
+      fieldName = None
+      fieldIndex = None
+      categories = None
+
+      if vLayer.isUsingRendererV2():
+        renderer = vLayer.rendererV2()
+        rendererType = renderer.type()
+
+        fieldName = renderer.classAttribute()
+        fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+        categories = renderer.categories()
+      else:
+        renderer = vLayer.renderer()
+        rendererType = renderer.name()
+
+        fieldIndex = renderer.classificationField()
+        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+        categories = renderer.symbolMap()
+
+      # unsupported renderer, process next layer
+      if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+        print "Invalid renderer type! Skip this layer..."
+        continue
+
+      # prepare to collect information
+      overlayFeat = QgsFeature()
+      currentFeat = QgsFeature()
+      geom = QgsGeometry()
+
+      spatialIndex = utils.createSpatialIndex( vProvider )
+
+      if self.chkUseSelection.isChecked():
+        pass
+      else:
+        dataArea.clear()
+        dataObjects.clear()
+        featureClass = None
+        category = None
+        overlayProvider.featureAtId( 0, overlayFeat )
+
+        geom = QgsGeometry( overlayFeat.geometry() )
+        if needTransform:
+          if geom.transform( crsTransform ) != 0:
+            print "Unable transform geometry"
+            continue
+
+        dataArea[ "totalArea" ] = float( geom.area() * coef )
+
+        # find intersections in data layer
+        intersections = spatialIndex.intersects( geom.boundingBox() )
+        for i in intersections:
+          vProvider.featureAtId( int( i ), currentFeat, True, [ fieldIndex ] )
+          tmpGeom = QgsGeometry( currentFeat.geometry() )
+          # precision test for intersection
+          if geom.intersects( tmpGeom ):
+            # get data for area report
+            attrMap = currentFeat.attributeMap()
+            featureClass = attrMap.values()[ 0 ].toString()
+            if vLayer.isUsingRendererV2():
+              category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
+            else:
+              category = categories[ attrMap.values()[ 0 ].toString() ].label()
+
+            intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
+            if intGeom.wkbType() == 7:
+              intCom = geom.combine( tmpGeom )
+              intSym = geom.symDifference( tmpGeom )
+              intGeom = QgsGeometry( intCom.difference( intSym ) )
+
+            if category not in dataArea:
+              dataArea[ category ] = float( intGeom.area() * coef )
+            else:
+              dataArea[ category ] += float( intGeom.area() * coef )
+
+      # get extent of the overlay geometry (for reports)
+      rect = geom.boundingBox()
+      dw = rect.width() * 0.025
+      dh = rect.height() * 0.025
+      rect.setXMinimum( rect.xMinimum() - dw )
+      rect.setXMaximum( rect.xMaximum() + dw )
+      rect.setYMinimum( rect.yMinimum() - dh )
+      rect.setYMaximum( rect.yMaximum() + dh )
+
+      # create map
+      mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR )
+
+      # create all necessary reports
+      layerConfig = utils.findLayerInConfig( self.cfgRoot, layerName )
+
+      # add page break after first layer
+      if not isFirst:
+        writer.addPageBreak()
+      isFirst = False
+
+      # print title
+      writer.addTitle( layerName )
+      if utils.hasReport( layerConfig, "area" ):
+        writer.addAreaTable( fieldName, dataArea )
+        # embed image in report if requested
+        if self.chkAddMapsToReport.isChecked():
+          imgData = QByteArray()
+          buff = QBuffer( imgData )
+          buff.open( QIODevice.WriteOnly )
+          mapImage.save( buff, "png" )
+          writer.addThematicImage( layerName, QString.fromLatin1( imgData.toBase64() ) )
+
+      # save separate map if requested
+      if self.chkCreateMaps.isChecked():
+        mapImage.save( dirName + "/" + layerName + ".png", "png" )
+
+      self.progressBar.setValue( self.progressBar.value() + 1 )
+      QCoreApplication.processEvents()
+
+    # save report to files
+    writer.closeReport()
+    writer.write( self.leOutput.text() )
+
+    # restore UI
     self.progressBar.setFormat( "%p%" )
     self.progressBar.setRange( 0, 1 )
     self.progressBar.setValue( 0 )
 
     QApplication.restoreOverrideCursor()
-    QObject.connect( self.buttonBox, SIGNAL( "rejected()" ), self.reject )
-    self.btnClose.setText( self.tr( "Close" ) )
     self.btnOk.setEnabled( True )
-
-# **********************************************************************
-  #~ def accept( self ):
-    #~ if not self.config:
-      #~ return
-#~
-    #~ if self.leOutput.text().isEmpty():
-      #~ QMessageBox.warning( self,
-                           #~ self.tr( "Reporter" ),
-                           #~ self.tr( "Please specify output report file" ) )
-      #~ return
-#~
-    #~ self.cleanupConfigAndGui()
-#~
-    #~ self.btnOk.setEnabled( False )
-#~
-    #~ # save settings
-    #~ self.saveSettings()
-#~
-    #~ # get layer count
-    #~ layerCount = 0
-    #~ layerNames = []
-    #~ for i in xrange( self.lstLayers.topLevelItemCount() ):
-      #~ item = self.lstLayers.topLevelItem( i )
-      #~ if item.checkState( 0 ) == Qt.Checked:
-        #~ layerCount += 1
-        #~ layerNames.append( item.text( 0 ) )
-#~
-    #~ self.progressBar.setRange( 0, layerCount )
-#~
-    #~ # get extent of the overlay geometry (for reports)
-    #~ vl = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
-    #~ ft = QgsFeature()
-    #~ vl.featureAtId( 0, ft, True, False )
-    #~ rect = ft.geometry().boundingBox()
-    #~ t = rect.width() * 0.05
-    #~ rect.setXMinimum( rect.xMinimum() - t )
-    #~ rect.setXMaximum( rect.xMaximum() + t )
-    #~ rect.setYMinimum( rect.yMinimum() - t )
-    #~ rect.setYMaximum( rect.yMaximum() + t )
-#~
-    #~ crs = self.iface.mapCanvas().mapRenderer().destinationCrs()
-    #~ otf = self.iface.mapCanvas().hasCrsTransformEnabled()
-#~
-    #~ # output dir
-    #~ dirName = QFileInfo( self.leOutput.text() ).absolutePath()
-#~
-    #~ # init report writer
-    #~ writer = wordmlwriter.WordMLWriter()
-#~
-    #~ # process layers
-    #~ isFirst = True
-    #~ for i in xrange( self.lstLayers.topLevelItemCount() ):
-      #~ item = self.lstLayers.topLevelItem( i )
-#~
-      #~ if item.checkState( 0 ) == Qt.Unchecked:
-        #~ continue
-#~
-      #~ currentLayerName = item.text( 0 )
-      #~ cLayer = utils.findLayerInConfig( self.cfgRoot, currentLayerName )
-#~
-      #~ self.progressBar.setFormat( self.tr( "%p% processing: %1" ).arg( currentLayerName ) )
-      #~ QCoreApplication.processEvents()
-#~
-      #~ # create map
-      #~ vlThematic = utils.getVectorLayerByName( currentLayerName )
-      #~ mapImage = utils.createMapImage( vl, vlThematic, rect, crs, otf )
-#~
-      #~ if self.chkCreateMaps.isChecked():
-        #~ mapImage.save( dirName + "/" + currentLayerName + ".png", "png" )
-#~
-      #~ # add page break before new table
-      #~ if not isFirst:
-        #~ writer.addPageBreak()
-#~
-      #~ isFirst = False
-#~
-      #~ # print title
-      #~ writer.addTitle( currentLayerName )
-#~
-      #~ if utils.hasReport( cLayer, "area" ):
-        #~ self.areaReport( writer, currentLayerName, mapImage )
-#~
-      #~ self.progressBar.setValue( self.progressBar.value() + 1 )
-      #~ QCoreApplication.processEvents()
-#~
-    #~ # write report to file
-    #~ writer.closeReport()
-    #~ writer.write( self.leOutput.text() )
-#~
-    #~ self.progressBar.setFormat( "%p%" )
-    #~ self.progressBar.setRange( 0, 1)
-    #~ self.progressBar.setValue( 0 )
-    #~ QMessageBox.information( self,
-                             #~ self.tr( "Reporter" ),
-                             #~ self.tr( "Completed!" ) )
-#~
-    #~ self.btnOk.setEnabled( True )
-#~
-  #~ def areaReport( self, writer, layerName, image ):
-    #~ layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
-    #~ providerA = layerA.dataProvider()
-#~
-    #~ layerB = utils.getVectorLayerByName( layerName )
-    #~ providerB = layerB.dataProvider()
-#~
-    #~ providerA.rewind()
-    #~ providerA.select( providerA.attributeIndexes() )
-    #~ providerB.rewind()
-    #~ providerB.select( providerB.attributeIndexes() )
-#~
-    #~ crsTransform = QgsCoordinateTransform( layerA.crs(), self.iface.mapCanvas().mapRenderer().destinationCrs() )
-#~
-    #~ # get dimensioning coefficient
-    #~ coef = 1.0
-    #~ if self.rbSimpleUnits.isChecked():
-      #~ coef = 1.0
-    #~ elif self.rbKiloUnits.isChecked():
-      #~ coef = 0.00001
-    #~ else:
-      #~ coef = 0.0000001
-#~
-    #~ # determine classification field
-    #~ rendererType = None
-    #~ fieldName = None
-    #~ fieldIndex = None
-#~
-    #~ if layerB.isUsingRendererV2():
-      #~ renderer = layerB.rendererV2()
-      #~ rendererType = renderer.type()
-#~
-      #~ fieldName = renderer.classAttribute()
-      #~ fieldIndex = utils.fieldIndexByName( providerB, fieldName )
-    #~ else:
-      #~ renderer = layerB.renderer()
-      #~ rendererType = renderer.name()
-#~
-      #~ fieldIndex = renderer.classificationField()
-      #~ fieldName = utils.fieldNameByIndex( providerB, fieldIndex )
-#~
-    #~ if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
-      #~ #print "Invalid renderer type!"
-      #~ return
-#~
-    #~ index = utils.createSpatialIndex( providerB )
-#~
-    #~ featA = QgsFeature()
-    #~ featB = QgsFeature()
-    #~ outFeat = QgsFeature()
-#~
-    #~ if self.chkUseSelection.isChecked():
-      #~ #print "Use selection option currently not supported!"
-      #~ pass
-    #~ else:
-      #~ nFeat = providerA.featureCount()
-      #~ className = None
-#~
-      #~ rptData = dict()
-#~
-      #~ while providerA.nextFeature( featA ):
-        #~ rptData.clear()
-        #~ geom = QgsGeometry( featA.geometry() )
-        #~ if geom.transform( crsTransform ) != 0:
-          #~ continue
-        #~ rptData[ "totalArea" ] = float( geom.area() * coef )
-        #~ intersects = index.intersects( geom.boundingBox() )
-        #~ for i in intersects:
-          #~ providerB.featureAtId( int( i ), featB , True, [ fieldIndex ] )
-          #~ tmpGeom = QgsGeometry( featB.geometry() )
-#~
-          #~ if geom.intersects( tmpGeom ):
-            #~ attrMap = featB.attributeMap()
-            #~ className = attrMap.values()[ 0 ].toString()
-            #~ intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
-            #~ if intGeom.wkbType() == 7:
-              #~ intCom = geom.combine( tmpGeom )
-              #~ intSym = geom.symDifference( tmpGeom )
-              #~ intGeom = QgsGeometry( intCom.difference( intSym ) )
-#~
-            #~ if className not in rptData:
-              #~ rptData[ className ] = float( intGeom.area() * coef )
-            #~ else:
-              #~ rptData[ className ] += float( intGeom.area() * coef )
-#~
-        #~ # process only first feature
-        #~ break
-#~
-    #~ writer.addAreaTable( fieldName, rptData )
-#~
-    #~ # add image if requested
-    #~ if self.chkAddMapsToReport.isChecked():
-      #~ imgData = QByteArray()
-      #~ buff = QBuffer( imgData )
-      #~ buff.open( QIODevice.WriteOnly )
-      #~ image.save( buff, "png" )
-#~
-      #~ writer.addThematicImage( layerName, QString.fromLatin1( imgData.toBase64() ) )
