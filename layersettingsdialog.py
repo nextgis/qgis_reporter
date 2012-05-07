@@ -45,9 +45,6 @@ class LayerSettingsDialog( QDialog, Ui_LayerSettingsDialog ):
   def setObjectsReport( self, isChecked ):
     self.chkObjectsTable.setChecked( isChecked )
 
-  def setOtherReport( self, isChecked ):
-    self.chkOtherData.setChecked( isChecked )
-
 #***********************************************************************
 
   def areasReport( self ):
@@ -55,6 +52,3 @@ class LayerSettingsDialog( QDialog, Ui_LayerSettingsDialog ):
 
   def objectsReport( self ):
     return self.chkObjectsTable.isChecked()
-
-  def otherReport( self ):
-    return self.chkOtherData.isChecked()
