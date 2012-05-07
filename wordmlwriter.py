@@ -72,16 +72,42 @@ class WordMLWriter( QObject ):
     self.report += '<w:tc><w:tcPr><w:tcW w:w="3190" w:type="dxa"/></w:tcPr>'
     self.report += QString( '<w:p><w:r><w:t>%1</w:t></w:r></w:p></w:tc>\n' ).arg( cellValue )
 
+  def addObjectsTable( self, tableData ):
+    # table
+    self.report += '<w:tbl><w:tblPr><w:tblStyle w:val="MyTable"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="01E0"/></w:tblPr>\n'
+    self.report += '<w:tblGrid><w:gridCol w:w="4785"/><w:gridCol w:w="4785"/></w:tblGrid>\n'
+
+    # header
+    self.report += '<w:tr><w:trPr><w:cnfStyle w:val="100000000000"/></w:trPr>\n'
+    self.addObjectsTableCell( self.tr( "Object" ) )
+    self.addObjectsTableCell( self.tr( "Count" ) )
+    self.report += '</w:tr>\n'
+
+    # table data
+    for k, v in tableData.iteritems():
+      self.report += '<w:tr>'
+      self.addObjectsTableCell( k )
+      self.addObjectsTableCell( v )
+      self.report += '</w:tr>\n'
+
+    # close table
+    self.report += '</w:tbl>\n<w:p/>\n'
+
+  def addObjectsTableCell( self, cellValue ):
+    self.report += '<w:tc><w:tcPr><w:tcW w:w="4785" w:type="dxa"/></w:tcPr>'
+    self.report += QString( '<w:p><w:r><w:t>%1</w:t></w:r></w:p></w:tc>\n' ).arg( cellValue )
+
+
   def addThematicImage( self, layerName, image ):
     self.report += '<w:p><w:r><w:pict>'
     self.report += QString( '<w:binData w:name="wordml://%1">' ).arg( layerName )
     self.report += image
     self.report += '</w:binData><v:shape id="_x0000_i1025" type="#_x0000_t75" style="width:467pt;height:330.1pt">'
     self.report += QString( '<v:imagedata src="wordml://%1" o:title="map"/>' ).arg( layerName )
-    self.report += '</v:shape></w:pict></w:r></w:p>'
+    self.report += '</v:shape></w:pict></w:r></w:p><w:p/>\n'
 
   def addPageBreak( self ):
-    self.report += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+    self.report += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>\n'
 
   def closeReport( self ):
     self.report += "</wx:sect></w:body></w:wordDocument>"

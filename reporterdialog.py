@@ -36,7 +36,6 @@ from ui_reporterdialogbase import Ui_ReporterDialog
 
 import layersettingsdialog
 import wordmlwriter
-import reporterthread
 import reporter_utils as utils
 
 class ReporterDialog( QDialog, Ui_ReporterDialog ):
@@ -399,6 +398,13 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
             else:
               category = categories[ attrMap.values()[ 0 ].toString() ].label()
 
+            # count objects
+            if category not in dataObjects:
+              dataObjects[ category ] = 1
+            else:
+              dataObjects[ category ] += 1
+
+            # calculate intersection area
             intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
             if intGeom.wkbType() == 7:
               intCom = geom.combine( tmpGeom )
@@ -432,15 +438,20 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       # print title
       writer.addTitle( layerName )
+
       if utils.hasReport( layerConfig, "area" ):
         writer.addAreaTable( fieldName, dataArea )
-        # embed image in report if requested
-        if self.chkAddMapsToReport.isChecked():
-          imgData = QByteArray()
-          buff = QBuffer( imgData )
-          buff.open( QIODevice.WriteOnly )
-          mapImage.save( buff, "png" )
-          writer.addThematicImage( layerName, QString.fromLatin1( imgData.toBase64() ) )
+
+      if utils.hasReport( layerConfig, "objects" ):
+        writer.addObjectsTable( dataObjects )
+
+      # embed image in report if requested
+      if self.chkAddMapsToReport.isChecked():
+        imgData = QByteArray()
+        buff = QBuffer( imgData )
+        buff.open( QIODevice.WriteOnly )
+        mapImage.save( buff, "png" )
+        writer.addThematicImage( layerName, QString.fromLatin1( imgData.toBase64() ) )
 
       # save separate map if requested
       if self.chkCreateMaps.isChecked():
