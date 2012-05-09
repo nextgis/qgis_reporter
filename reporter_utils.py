@@ -205,7 +205,7 @@ def layersWithoutReports( root ):
 # helper map print functions
 # *****************************************************************************
 
-def createMapImage( boundLayer, thematicLayer, rectangle, crs, otf ):
+def createMapImage( boundLayer, thematicLayer, rectangle, crs, otf, usedClasses ):
   renderer = QgsMapRenderer()
   renderer.setDestinationCrs( crs )
   renderer.setProjectionsEnabled( otf )
@@ -224,7 +224,47 @@ def createMapImage( boundLayer, thematicLayer, rectangle, crs, otf ):
   composition.addItem( legend )
 
   # TODO: remove unused classes from legend
+  layerName = thematicLayer.name()
   model = legend.model()
+  print "LEGEND ROWS", model.rowCount()
+  print "LEGEND COLS", model.columnCount()
+  #legend.beginCommand( "remove item" )
+  selectModel = QItemSelectionModel( model )
+
+  parent = model.findItems( layerName )[ 0 ]
+  print "***** PARENT", unicode( parent.text() )
+  parentIndex = parent.index()
+  print "***** CHILDREN", parent.hasChildren()
+  print "ROWS", model.rowCount( parentIndex )
+  print "COLS", model.columnCount( parentIndex )
+  delSelection = []
+  for i in xrange( model.rowCount( parentIndex ) ):
+    for j in xrange( model.columnCount( parentIndex ) ):
+      #print unicode( parent.child(i, j).text() )
+      if parent.child( i, j ).text() not in usedClasses:
+        print "SHEDULE DELETE", parent.child( i, j ).text()
+        selectModel.select( parent.child( i, j ).index(), QItemSelectionModel.SelectCurrent )
+        delSelection.append( parent.child( i, j ).index() )
+        # print "SELECTION", len( selectModel.selectedIndexes() )
+
+  # delete unused legend classes
+  #~ for i  in selectModel.selectedIndexes():
+    #~ parentIndex = i.parent()
+    #~ model.removeRow( i.row(), parentIndex )
+    #~ print "DELETED"
+  for i in delSelection:
+    parentIndex = i.parent()
+    if model.removeRow( i.row(), parentIndex ):
+      print "DELETED"
+    else:
+      print "DELETE FAILED"
+
+  legend.adjustBoxSize()
+  legend.update()
+  print "NEW LEGEND ROWS", model.rowCount()
+  print "NEW LEGEND COLS", model.columnCount()
+  #legend.endCommand()
+
 
   # an idiotic workaround to get legend size
   dpi = composition.printResolution()

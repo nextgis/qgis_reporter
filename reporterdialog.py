@@ -426,6 +426,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
             else:
               category = categories[ attrMap.values()[ 0 ].toString() ].label()
 
+            if category.isEmpty():
+              category = featureClass
+
             # count objects
             if category not in dataObjects:
               dataObjects[ category ] = 1
@@ -454,7 +457,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       rect.setYMaximum( rect.yMaximum() + dh )
 
       # create map
-      mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR )
+      mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR, dataObjects.keys() )
 
       # create all necessary reports
       layerConfig = utils.findLayerInConfig( self.cfgRoot, layerName )
