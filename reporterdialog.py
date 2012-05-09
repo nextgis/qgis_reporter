@@ -51,7 +51,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
 
     QObject.connect( self.lstLayers, SIGNAL( "itemChanged( QTreeWidgetItem*, int )" ), self.toggleLayer )
-    QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked( QTreeWidgetItem*, int )" ), self.openConfigDialog )
+    #QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked( QTreeWidgetItem*, int )" ), self.openConfigDialog )
+    QObject.connect( self.lstLayers, SIGNAL( "itemSelectionChanged()" ), self.openConfigDialog2 )
 
     QObject.connect( self.btnNewConfig, SIGNAL( "clicked ()" ), self.newConfiguration )
     QObject.connect( self.btnLoadConfig, SIGNAL( "clicked ()" ), self.loadConfiguration )
@@ -189,8 +190,34 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.lblProfilePath.setText( self.tr( "Config file: %1" ).arg( fileName ) )
 
-  def openConfigDialog( self, item, column ):
-    layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
+  #~ def openConfigDialog( self, item, column ):
+    #~ layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
+    #~ if layerElement == None:
+      #~ return
+#~
+    #~ d = layersettingsdialog.LayerSettingsDialog( self )
+#~
+    #~ # update dialog
+    #~ d.setAreasReport( utils.hasReport( layerElement, "area" ) )
+    #~ d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
+#~
+    #~ if not d.exec_() == QDialog.Accepted:
+      #~ return
+#~
+    #~ # update layer config if necessary
+    #~ if d.areasReport():
+      #~ utils.addLayerReport( self.config, layerElement, "area" )
+    #~ else:
+      #~ utils.removeLayerReport( layerElement, "area" )
+#~
+    #~ if d.objectsReport():
+      #~ utils.addLayerReport( self.config, layerElement, "objects" )
+    #~ else:
+      #~ utils.removeLayerReport( layerElement, "objects" )
+
+  def openConfigDialog2( self ):
+    items = self.lstLayers.selectedItems()
+    layerElement = utils.findLayerInConfig( self.cfgRoot, items[ 0 ].text( 0 ) )
     if layerElement == None:
       return
 
@@ -213,6 +240,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       utils.addLayerReport( self.config, layerElement, "objects" )
     else:
       utils.removeLayerReport( layerElement, "objects" )
+
 
   def toggleLayer( self, item, column ):
     if self.config:

@@ -223,6 +223,9 @@ def createMapImage( boundLayer, thematicLayer, rectangle, crs, otf ):
   legend.model().setLayerSet( renderer.layerSet() )
   composition.addItem( legend )
 
+  # TODO: remove unused classes from legend
+  model = legend.model()
+
   # an idiotic workaround to get legend size
   dpi = composition.printResolution()
   dpmm = dpi / 25.4
