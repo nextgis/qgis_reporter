@@ -226,45 +226,32 @@ def createMapImage( boundLayer, thematicLayer, rectangle, crs, otf, usedClasses 
   # TODO: remove unused classes from legend
   layerName = thematicLayer.name()
   model = legend.model()
-  print "LEGEND ROWS", model.rowCount()
-  print "LEGEND COLS", model.columnCount()
-  #legend.beginCommand( "remove item" )
-  selectModel = QItemSelectionModel( model )
 
   parent = model.findItems( layerName )[ 0 ]
-  print "***** PARENT", unicode( parent.text() )
   parentIndex = parent.index()
-  print "***** CHILDREN", parent.hasChildren()
-  print "ROWS", model.rowCount( parentIndex )
-  print "COLS", model.columnCount( parentIndex )
-  delSelection = []
+
+  mySelection = QItemSelection()
   for i in xrange( model.rowCount( parentIndex ) ):
     for j in xrange( model.columnCount( parentIndex ) ):
-      #print unicode( parent.child(i, j).text() )
       if parent.child( i, j ).text() not in usedClasses:
-        print "SHEDULE DELETE", parent.child( i, j ).text()
-        selectModel.select( parent.child( i, j ).index(), QItemSelectionModel.SelectCurrent )
-        delSelection.append( parent.child( i, j ).index() )
-        # print "SELECTION", len( selectModel.selectedIndexes() )
+        s = QItemSelection()
+        s.append( QItemSelectionRange( parent.child( i, j ).index() ) )
+        mySelection.merge( s, QItemSelectionModel.SelectCurrent )
 
-  # delete unused legend classes
-  #~ for i  in selectModel.selectedIndexes():
-    #~ parentIndex = i.parent()
-    #~ model.removeRow( i.row(), parentIndex )
-    #~ print "DELETED"
-  for i in delSelection:
+  v = QTreeView()
+  v.setModel( model )
+  v.setSelectionMode( QAbstractItemView.ContiguousSelection )
+  sm = v.selectionModel()
+  sm.select( mySelection, QItemSelectionModel.SelectCurrent )
+
+  lind = sm.selectedIndexes()
+  lind.reverse()
+  for i in lind:
     parentIndex = i.parent()
-    if model.removeRow( i.row(), parentIndex ):
-      print "DELETED"
-    else:
-      print "DELETE FAILED"
+    model.removeRow( i.row(), parentIndex )
 
   legend.adjustBoxSize()
   legend.update()
-  print "NEW LEGEND ROWS", model.rowCount()
-  print "NEW LEGEND COLS", model.columnCount()
-  #legend.endCommand()
-
 
   # an idiotic workaround to get legend size
   dpi = composition.printResolution()
