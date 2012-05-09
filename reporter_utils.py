@@ -225,30 +225,27 @@ def createMapImage( boundLayer, thematicLayer, rectangle, crs, otf, usedClasses 
 
   # TODO: remove unused classes from legend
   layerName = thematicLayer.name()
-  model = legend.model()
+  legendModel = legend.model()
 
-  parent = model.findItems( layerName )[ 0 ]
-  parentIndex = parent.index()
+  thematicItem = legendModel.findItems( layerName )[ 0 ]
+  thematicItemIndex = thematicItem.index()
 
   mySelection = QItemSelection()
-  for i in xrange( model.rowCount( parentIndex ) ):
-    for j in xrange( model.columnCount( parentIndex ) ):
-      if parent.child( i, j ).text() not in usedClasses:
+  for i in xrange( legendModel.rowCount( thematicItemIndex ) ):
+    for j in xrange( legendModel.columnCount( thematicItemIndex ) ):
+      if thematicItem.child( i, j ).text() not in usedClasses:
         s = QItemSelection()
-        s.append( QItemSelectionRange( parent.child( i, j ).index() ) )
+        s.append( QItemSelectionRange( thematicItem.child( i, j ).index() ) )
         mySelection.merge( s, QItemSelectionModel.SelectCurrent )
 
-  v = QTreeView()
-  v.setModel( model )
-  v.setSelectionMode( QAbstractItemView.ContiguousSelection )
-  sm = v.selectionModel()
+  sm = QItemSelectionModel( legendModel )
   sm.select( mySelection, QItemSelectionModel.SelectCurrent )
 
-  lind = sm.selectedIndexes()
-  lind.reverse()
-  for i in lind:
+  selectedIndexes = sm.selectedIndexes()
+  selectedIndexes.reverse()
+  for i in selectedIndexes:
     parentIndex = i.parent()
-    model.removeRow( i.row(), parentIndex )
+    legendModel.removeRow( i.row(), parentIndex )
 
   legend.adjustBoxSize()
   legend.update()
