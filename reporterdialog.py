@@ -323,7 +323,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     QApplication.setOverrideCursor( QCursor( Qt.WaitCursor ) )
     self.btnOk.setEnabled( False )
 
-    # ***************** create report ************************
+    # ***************** create reports ************************
     overlayLayer = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
     overlayProvider = overlayLayer.dataProvider()
 
@@ -394,58 +394,61 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       spatialIndex = utils.createSpatialIndex( vProvider )
 
-      if self.chkUseSelection.isChecked():
-        pass
+      #if self.chkUseSelection.isChecked():
+      if overlayLayer.selectedFeatureCount() != 0:
+        sel = overlayLayer.selectedFeaturesIds()
+        overlayProvider.featureAtId( max( sel ), overlayFeat )
       else:
-        dataArea.clear()
-        dataObjects.clear()
-        featureClass = None
-        category = None
-        overlayProvider.featureAtId( 0, overlayFeat )
+        overlayProvider.featureAtId( overlayProvider.featureCount() - 1, overlayFeat )
 
-        geom = QgsGeometry( overlayFeat.geometry() )
-        if needTransform:
-          if geom.transform( crsTransform ) != 0:
-            print "Unable transform geometry"
-            continue
+      dataArea.clear()
+      dataObjects.clear()
+      featureClass = None
+      category = None
 
-        dataArea[ "totalArea" ] = float( geom.area() * coef )
+      geom = QgsGeometry( overlayFeat.geometry() )
+      if needTransform:
+        if geom.transform( crsTransform ) != 0:
+          print "Unable transform geometry"
+          continue
 
-        # find intersections in data layer
-        intersections = spatialIndex.intersects( geom.boundingBox() )
-        for i in intersections:
-          vProvider.featureAtId( int( i ), currentFeat, True, [ fieldIndex ] )
-          tmpGeom = QgsGeometry( currentFeat.geometry() )
-          # precision test for intersection
-          if geom.intersects( tmpGeom ):
-            # get data for area report
-            attrMap = currentFeat.attributeMap()
-            featureClass = attrMap.values()[ 0 ].toString()
-            if vLayer.isUsingRendererV2():
-              category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
-            else:
-              category = categories[ attrMap.values()[ 0 ].toString() ].label()
+      dataArea[ "totalArea" ] = float( geom.area() * coef )
 
-            if category.isEmpty():
-              category = featureClass
+      # find intersections in data layer
+      intersections = spatialIndex.intersects( geom.boundingBox() )
+      for i in intersections:
+        vProvider.featureAtId( int( i ), currentFeat, True, [ fieldIndex ] )
+        tmpGeom = QgsGeometry( currentFeat.geometry() )
+        # precision test for intersection
+        if geom.intersects( tmpGeom ):
+          # get data for area report
+          attrMap = currentFeat.attributeMap()
+          featureClass = attrMap.values()[ 0 ].toString()
+          if vLayer.isUsingRendererV2():
+            category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
+          else:
+            category = categories[ attrMap.values()[ 0 ].toString() ].label()
 
-            # count objects
-            if category not in dataObjects:
-              dataObjects[ category ] = 1
-            else:
-              dataObjects[ category ] += 1
+          #~ if category.isEmpty():
+            #~ category = featureClass
 
-            # calculate intersection area
-            intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
-            if intGeom.wkbType() == 7:
-              intCom = geom.combine( tmpGeom )
-              intSym = geom.symDifference( tmpGeom )
-              intGeom = QgsGeometry( intCom.difference( intSym ) )
+          # count objects
+          if category not in dataObjects:
+            dataObjects[ category ] = 1
+          else:
+            dataObjects[ category ] += 1
 
-            if category not in dataArea:
-              dataArea[ category ] = float( intGeom.area() * coef )
-            else:
-              dataArea[ category ] += float( intGeom.area() * coef )
+          # calculate intersection area
+          intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
+          if intGeom.wkbType() == 7:
+            intCom = geom.combine( tmpGeom )
+            intSym = geom.symDifference( tmpGeom )
+            intGeom = QgsGeometry( intCom.difference( intSym ) )
+
+          if category not in dataArea:
+            dataArea[ category ] = float( intGeom.area() * coef )
+          else:
+            dataArea[ category ] += float( intGeom.area() * coef )
 
       # get extent of the overlay geometry (for reports)
       rect = geom.boundingBox()
