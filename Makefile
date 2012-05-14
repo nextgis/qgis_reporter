@@ -41,7 +41,7 @@ clean:
 	rm -f *.zip
 
 package:
-	cd .. && rm -f *.zip && zip -r reporter.experimental.zip reporter -x \*.pyc -x \*~ -x \*.git\*
+	cd .. && rm -f *.zip && zip -r reporter.experimental.zip reporter -x \*.pyc \*.ts \*.ui \*.qrc \*.pro \*~ \*.git\* \*Makefile*
 	mv ../reporter.experimental.zip .
 
 upload:
