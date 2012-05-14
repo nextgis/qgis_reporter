@@ -80,7 +80,7 @@ Plugin will not be enabled.</source>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="364"/>
+        <location filename="reporterdialog.py" line="303"/>
         <source>Reporter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -145,66 +145,61 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="89"/>
+        <location filename="reporterdialog.py" line="90"/>
         <source>Select output directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="89"/>
+        <location filename="reporterdialog.py" line="90"/>
         <source>Micosoft Word 2003 (*.doc *.DOC)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="106"/>
+        <location filename="reporterdialog.py" line="107"/>
         <source>Load configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="168"/>
+        <location filename="reporterdialog.py" line="169"/>
         <source>XML files (*.xml *.XML)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="127"/>
+        <location filename="reporterdialog.py" line="128"/>
         <source>Load error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="117"/>
+        <location filename="reporterdialog.py" line="118"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="127"/>
+        <location filename="reporterdialog.py" line="128"/>
         <source>Parse error at line %1, column %2:
 %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="168"/>
+        <location filename="reporterdialog.py" line="169"/>
         <source>Save configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="176"/>
+        <location filename="reporterdialog.py" line="177"/>
         <source>Save error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="176"/>
+        <location filename="reporterdialog.py" line="177"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="280"/>
+        <location filename="reporterdialog.py" line="303"/>
         <source>Please specify output report file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="reporterdialog.py" line="364"/>
-        <source>Completed!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -233,7 +228,7 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="332"/>
+        <location filename="reporterdialog.py" line="355"/>
         <source>%p% processing: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -248,12 +243,12 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="247"/>
+        <location filename="reporterdialog.py" line="269"/>
         <source>Config file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="249"/>
+        <location filename="reporterdialog.py" line="271"/>
         <source>No profile loaded</source>
         <translation type="unfinished"></translation>
     </message>
@@ -268,6 +263,16 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="wordmlwriter.py" line="55"/>
         <source>Percents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="wordmlwriter.py" line="82"/>
+        <source>Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="wordmlwriter.py" line="83"/>
+        <source>Count</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
