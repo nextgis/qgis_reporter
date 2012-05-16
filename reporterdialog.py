@@ -51,8 +51,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
 
     QObject.connect( self.lstLayers, SIGNAL( "itemChanged( QTreeWidgetItem*, int )" ), self.toggleLayer )
-    #QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked( QTreeWidgetItem*, int )" ), self.openConfigDialog )
-    #QObject.connect( self.lstLayers, SIGNAL( "itemSelectionChanged()" ), self.openConfigDialog2 )
+    QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked( QTreeWidgetItem*, int )" ), self.openConfigDialog )
 
     QObject.connect( self.btnNewConfig, SIGNAL( "clicked ()" ), self.newConfiguration )
     QObject.connect( self.btnLoadConfig, SIGNAL( "clicked ()" ), self.loadConfiguration )
@@ -63,17 +62,11 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.manageGui()
 
   def manageGui( self ):
-    # hide some UI elements
-    self.chkUseSelection.hide()
-
-    # load settings
     self.readSettings()
 
-    # setup controls
     self.btnSaveConfig.setEnabled( False )
     self.lstLayers.setEnabled( False )
 
-    # populate GUI
     self.cmbAnalysisRegion.addItems( utils.getVectorLayersNames( [ QGis.Polygon ] ) )
     layers = utils.getVectorLayersNames( [ QGis.Polygon ] )
     self.lstLayers.blockSignals( True )
@@ -99,7 +92,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.cfgRoot.setAttribute( "version", "1.0" )
     self.config.appendChild( self.cfgRoot )
 
-    # enable controls
     self.btnSaveConfig.setEnabled( True )
     self.lstLayers.setEnabled( True )
 
@@ -159,7 +151,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       for lay in missedLayers:
         utils.removeLayerFromConfig( self.cfgRoot, lay )
 
-    # enable controls
     self.btnSaveConfig.setEnabled( True )
     self.lstLayers.setEnabled( True )
 
@@ -190,40 +181,13 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     self.lblProfilePath.setText( self.tr( "Config file: %1" ).arg( fileName ) )
 
-  #~ def openConfigDialog( self, item, column ):
-    #~ layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
-    #~ if layerElement == None:
-      #~ return
-#~
-    #~ d = layersettingsdialog.LayerSettingsDialog( self )
-#~
-    #~ # update dialog
-    #~ d.setAreasReport( utils.hasReport( layerElement, "area" ) )
-    #~ d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
-#~
-    #~ if not d.exec_() == QDialog.Accepted:
-      #~ return
-#~
-    #~ # update layer config if necessary
-    #~ if d.areasReport():
-      #~ utils.addLayerReport( self.config, layerElement, "area" )
-    #~ else:
-      #~ utils.removeLayerReport( layerElement, "area" )
-#~
-    #~ if d.objectsReport():
-      #~ utils.addLayerReport( self.config, layerElement, "objects" )
-    #~ else:
-      #~ utils.removeLayerReport( layerElement, "objects" )
-
-  def openConfigDialog2( self ):
-    items = self.lstLayers.selectedItems()
-    layerElement = utils.findLayerInConfig( self.cfgRoot, items[ 0 ].text( 0 ) )
+  def openConfigDialog( self, item, column ):
+    layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
     if layerElement == None:
       return
 
     d = layersettingsdialog.LayerSettingsDialog( self )
 
-    # update dialog
     d.setAreasReport( utils.hasReport( layerElement, "area" ) )
     d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
 
@@ -250,11 +214,11 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
         d = layersettingsdialog.LayerSettingsDialog( self )
 
-        # update dialog
         d.setAreasReport( utils.hasReport( layerElement, "area" ) )
         d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
 
         if not d.exec_() == QDialog.Accepted:
+          item.setCheckState( 0, Qt.Unchecked )
           return
 
         # update layer config if necessary
@@ -282,7 +246,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
   def readSettings( self ):
     settings = QSettings( "NextGIS", "reporter" )
-    self.chkUseSelection.setChecked( settings.value( "useSelection", False ).toBool() )
     self.chkLoadLastProfile.setChecked( settings.value( "loadLastProfile", False ).toBool() )
     self.chkCreateMaps.setChecked( settings.value( "createMaps", True ).toBool() )
     self.chkAddMapsToReport.setChecked( settings.value( "mapsInReport", True ).toBool() )
@@ -301,7 +264,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
   def saveSettings( self ):
     settings = QSettings( "NextGIS", "reporter" )
-    settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
     settings.setValue( "loadLastProfile", self.chkLoadLastProfile.isChecked() )
     settings.setValue( "createMaps", self.chkCreateMaps.isChecked() )
     settings.setValue( "mapsInReport", self.chkAddMapsToReport.isChecked() )
@@ -327,7 +289,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       return
 
     self.cleanupConfigAndGui()
-    # save settings
     self.saveSettings()
 
     # get layer count
@@ -415,7 +376,6 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       spatialIndex = utils.createSpatialIndex( vProvider )
 
-      #if self.chkUseSelection.isChecked():
       if overlayLayer.selectedFeatureCount() != 0:
         sel = overlayLayer.selectedFeaturesIds()
         overlayProvider.featureAtId( max( sel ), overlayFeat )
