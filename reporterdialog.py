@@ -52,7 +52,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
     QObject.connect( self.lstLayers, SIGNAL( "itemChanged( QTreeWidgetItem*, int )" ), self.toggleLayer )
     #QObject.connect( self.lstLayers, SIGNAL( "itemDoubleClicked( QTreeWidgetItem*, int )" ), self.openConfigDialog )
-    QObject.connect( self.lstLayers, SIGNAL( "itemSelectionChanged()" ), self.openConfigDialog2 )
+    #QObject.connect( self.lstLayers, SIGNAL( "itemSelectionChanged()" ), self.openConfigDialog2 )
 
     QObject.connect( self.btnNewConfig, SIGNAL( "clicked ()" ), self.newConfiguration )
     QObject.connect( self.btnLoadConfig, SIGNAL( "clicked ()" ), self.loadConfiguration )
@@ -241,11 +241,32 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     else:
       utils.removeLayerReport( layerElement, "objects" )
 
-
   def toggleLayer( self, item, column ):
     if self.config:
       if item.checkState( 0 ) == Qt.Checked:
         utils.addLayerToConfig( self.config, self.cfgRoot, item.text( 0 ) )
+
+        layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
+
+        d = layersettingsdialog.LayerSettingsDialog( self )
+
+        # update dialog
+        d.setAreasReport( utils.hasReport( layerElement, "area" ) )
+        d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
+
+        if not d.exec_() == QDialog.Accepted:
+          return
+
+        # update layer config if necessary
+        if d.areasReport():
+          utils.addLayerReport( self.config, layerElement, "area" )
+        else:
+          utils.removeLayerReport( layerElement, "area" )
+
+        if d.objectsReport():
+          utils.addLayerReport( self.config, layerElement, "objects" )
+        else:
+          utils.removeLayerReport( layerElement, "objects" )
       else:
         utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 
@@ -429,8 +450,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
           else:
             category = categories[ attrMap.values()[ 0 ].toString() ].label()
 
-          #~ if category.isEmpty():
-            #~ category = featureClass
+          if category.isEmpty():
+            category = featureClass
 
           # count objects
           if category not in dataObjects:
