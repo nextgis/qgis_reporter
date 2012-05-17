@@ -387,6 +387,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       self.progressBar.setFormat( self.tr( "%p% processing: %1" ).arg( layerName ) )
       QCoreApplication.processEvents()
 
+      layerElement = utils.findLayerInConfig( self.cfgRoot, layerName )
+      labelFieldName = utils.labelFieldName( layerElement )
+
       vLayer = utils.getVectorLayerByName( layerName )
       vProvider = vLayer.dataProvider()
 
@@ -413,6 +416,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         fieldIndex = renderer.classificationField()
         fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
         categories = renderer.symbolMap()
+
+      # override fieldIndex using layer from config
+      tryLegendLabels = False
+      labelFieldIndex = utils.fieldIndexByName( vProvider, labelFieldName )
+      if labelFieldIndex == fieldIndex:
+        tryLegendLabels = True
+      else:
+        fieldIndex = labelFieldIndex
 
       # unsupported renderer, process next layer
       if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
@@ -455,12 +466,15 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
           # get data for area report
           attrMap = currentFeat.attributeMap()
           featureClass = attrMap.values()[ 0 ].toString()
-          if vLayer.isUsingRendererV2():
-            category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
-          else:
-            category = categories[ attrMap.values()[ 0 ].toString() ].label()
+          if tryLegendLabels:
+            if vLayer.isUsingRendererV2():
+              category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
+            else:
+              category = categories[ attrMap.values()[ 0 ].toString() ].label()
 
-          if category.isEmpty():
+            if category.isEmpty():
+              category = featureClass
+          else:
             category = featureClass
 
           # count objects
