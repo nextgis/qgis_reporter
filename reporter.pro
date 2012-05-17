@@ -6,5 +6,4 @@ SOURCES = __init__.py \
 FORMS = reporterdialogbase.ui \
         layersettingsdialogbase.ui
 
-TRANSLATIONS = i18n/reporter_ru_RU.ts \
-               i18n/reporter_uk_UA.ts
+TRANSLATIONS = i18n/reporter_ru_RU.ts
