@@ -214,6 +214,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     else:
       d.setLabelField( myLabelFieldName )
 
+    d.setComment( utils.layerComment( layerElement ) )
+
     if not d.exec_() == QDialog.Accepted:
       return
 
@@ -229,6 +231,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       utils.removeLayerReport( layerElement, "objects" )
 
     utils.setLabelFieldName( self.config, layerElement, d.getLabelField() )
+    utils.setLayerComment( self.config, layerElement, d.getComment() )
 
   def toggleLayer( self, item, column ):
     if self.config:
@@ -259,11 +262,13 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
         d.setAreasReport( utils.hasReport( layerElement, "area" ) )
         d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
-        myLabelFieldName = utils.labelFieldName( layerElement )
-        if myLabelFieldName.isEmpty():
+        tmp = utils.labelFieldName( layerElement )
+        if tmp.isEmpty():
           d.setLabelField( fieldName )
         else:
-          d.setLabelField( myLabelFieldName )
+          d.setLabelField( tmp )
+
+        d.setComment( utils.layerComment( layerElement ) )
 
         if not d.exec_() == QDialog.Accepted:
           item.setCheckState( 0, Qt.Unchecked )
@@ -281,6 +286,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
           utils.removeLayerReport( layerElement, "objects" )
 
         utils.setLabelFieldName( self.config, layerElement, d.getLabelField() )
+        utils.setLayerComment( self.config, layerElement, d.getComment() )
       else:
         utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 

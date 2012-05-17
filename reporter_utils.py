@@ -215,6 +215,12 @@ def setLabelFieldName( doc, elem, fieldName ):
   fld.setAttribute( "name", fieldName )
   elem.appendChild( fld )
 
+def layerComment( elem ):
+  return ""
+
+def setLayerComment( doc, elem, comment ):
+  pass
+
 def layersWithoutReports( root ):
   missed = []
   child = root.firstChildElement()
