@@ -17,6 +17,11 @@
         <source>Extract layer objects</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="34"/>
+        <source>Label table row using values of this field</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Reporter</name>
@@ -80,7 +85,7 @@ Plugin will not be enabled.</source>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="303"/>
+        <location filename="reporterdialog.py" line="336"/>
         <source>Reporter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -90,115 +95,110 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="47"/>
-        <source>Use only selected features</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="reporterdialogbase.ui" line="76"/>
+        <location filename="reporterdialogbase.ui" line="69"/>
         <source>Layer name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="84"/>
+        <location filename="reporterdialogbase.ui" line="77"/>
         <source>Profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="93"/>
+        <location filename="reporterdialogbase.ui" line="86"/>
         <source>New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="100"/>
+        <location filename="reporterdialogbase.ui" line="93"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="107"/>
+        <location filename="reporterdialogbase.ui" line="100"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="151"/>
+        <location filename="reporterdialogbase.ui" line="144"/>
         <source>Create thematic maps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="158"/>
+        <location filename="reporterdialogbase.ui" line="151"/>
         <source>Also embed maps in report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="165"/>
+        <location filename="reporterdialogbase.ui" line="158"/>
         <source>Load last configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="118"/>
+        <location filename="reporterdialogbase.ui" line="111"/>
         <source>Report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="128"/>
+        <location filename="reporterdialogbase.ui" line="121"/>
         <source>Browse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="90"/>
+        <location filename="reporterdialog.py" line="83"/>
         <source>Select output directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="90"/>
+        <location filename="reporterdialog.py" line="83"/>
         <source>Micosoft Word 2003 (*.doc *.DOC)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="107"/>
+        <location filename="reporterdialog.py" line="99"/>
         <source>Load configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="169"/>
+        <location filename="reporterdialog.py" line="160"/>
         <source>XML files (*.xml *.XML)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="128"/>
+        <location filename="reporterdialog.py" line="120"/>
         <source>Load error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="118"/>
+        <location filename="reporterdialog.py" line="110"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="128"/>
+        <location filename="reporterdialog.py" line="120"/>
         <source>Parse error at line %1, column %2:
 %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="169"/>
+        <location filename="reporterdialog.py" line="160"/>
         <source>Save configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="177"/>
+        <location filename="reporterdialog.py" line="168"/>
         <source>Save error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="177"/>
+        <location filename="reporterdialog.py" line="168"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="303"/>
+        <location filename="reporterdialog.py" line="336"/>
         <source>Please specify output report file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -208,27 +208,27 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="145"/>
+        <location filename="reporterdialogbase.ui" line="138"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="172"/>
+        <location filename="reporterdialogbase.ui" line="165"/>
         <source>Area dimensionality</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="178"/>
+        <location filename="reporterdialogbase.ui" line="171"/>
         <source>10^0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="192"/>
+        <location filename="reporterdialogbase.ui" line="185"/>
         <source>10^6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="355"/>
+        <location filename="reporterdialog.py" line="387"/>
         <source>%p% processing: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -238,17 +238,17 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="185"/>
+        <location filename="reporterdialogbase.ui" line="178"/>
         <source>10^4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="269"/>
+        <location filename="reporterdialog.py" line="303"/>
         <source>Config file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="271"/>
+        <location filename="reporterdialog.py" line="305"/>
         <source>No profile loaded</source>
         <translation type="unfinished"></translation>
     </message>

@@ -23,6 +23,11 @@
         <source>Some another data</source>
         <translation type="obsolete">Что-то еще</translation>
     </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="34"/>
+        <source>Label table row using values of this field</source>
+        <translation>Подписывать строки таблиц используя поле</translation>
+    </message>
 </context>
 <context>
     <name>Reporter</name>
@@ -97,7 +102,7 @@ Plugin will not be enabled.</source>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="303"/>
+        <location filename="reporterdialog.py" line="336"/>
         <source>Reporter</source>
         <translation>Reporter</translation>
     </message>
@@ -109,116 +114,116 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporterdialogbase.ui" line="47"/>
         <source>Use only selected features</source>
-        <translation>Использовать только выделенные объекты</translation>
+        <translation type="obsolete">Использовать только выделенные объекты</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="76"/>
+        <location filename="reporterdialogbase.ui" line="69"/>
         <source>Layer name</source>
         <translation>Имя слоя</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="84"/>
+        <location filename="reporterdialogbase.ui" line="77"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="93"/>
+        <location filename="reporterdialogbase.ui" line="86"/>
         <source>New</source>
         <translation>Новый</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="100"/>
+        <location filename="reporterdialogbase.ui" line="93"/>
         <source>Load</source>
         <translation>Загрузить</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="107"/>
+        <location filename="reporterdialogbase.ui" line="100"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="151"/>
+        <location filename="reporterdialogbase.ui" line="144"/>
         <source>Create thematic maps</source>
         <translation>Создать тематические карты</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="158"/>
+        <location filename="reporterdialogbase.ui" line="151"/>
         <source>Also embed maps in report</source>
         <translation>Также встроить карты в отчет</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="165"/>
+        <location filename="reporterdialogbase.ui" line="158"/>
         <source>Load last configuration</source>
         <translation>Загрузить последнюю конфигурацию</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="118"/>
+        <location filename="reporterdialogbase.ui" line="111"/>
         <source>Report</source>
         <translation>Отчет</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="128"/>
+        <location filename="reporterdialogbase.ui" line="121"/>
         <source>Browse</source>
         <translation>Обзор</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="90"/>
+        <location filename="reporterdialog.py" line="83"/>
         <source>Select output directory</source>
         <translation>Выберите каталог назначения</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="90"/>
+        <location filename="reporterdialog.py" line="83"/>
         <source>Micosoft Word 2003 (*.doc *.DOC)</source>
         <translation>Micosoft Word 2003 (*.doc *.DOC)</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="107"/>
+        <location filename="reporterdialog.py" line="99"/>
         <source>Load configuration</source>
         <translation>Загрузить конфигурацию</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="169"/>
+        <location filename="reporterdialog.py" line="160"/>
         <source>XML files (*.xml *.XML)</source>
         <translation>XMLфайлы (*.xml *.XML)</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="128"/>
+        <location filename="reporterdialog.py" line="120"/>
         <source>Load error</source>
         <translation>Ошибка загрузки</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="118"/>
+        <location filename="reporterdialog.py" line="110"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation>Не удалось прочитать файл %1:
 %2.</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="128"/>
+        <location filename="reporterdialog.py" line="120"/>
         <source>Parse error at line %1, column %2:
 %3</source>
         <translation>Ошибка разбора в строке %1, столбец %2:
 %3</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="169"/>
+        <location filename="reporterdialog.py" line="160"/>
         <source>Save configuration</source>
         <translation>Сохранить конфигурацию</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="177"/>
+        <location filename="reporterdialog.py" line="168"/>
         <source>Save error</source>
         <translation>Ошибка сохранения</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="177"/>
+        <location filename="reporterdialog.py" line="168"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation>Не удалось записать файл %1:
 %2.</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="303"/>
+        <location filename="reporterdialog.py" line="336"/>
         <source>Please specify output report file</source>
         <translation>Пожалуйста укажите файл отчета</translation>
     </message>
@@ -233,22 +238,22 @@ Plugin will not be enabled.</source>
         <translation>Слои</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="145"/>
+        <location filename="reporterdialogbase.ui" line="138"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="172"/>
+        <location filename="reporterdialogbase.ui" line="165"/>
         <source>Area dimensionality</source>
         <translation>Размерность площадей</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="178"/>
+        <location filename="reporterdialogbase.ui" line="171"/>
         <source>10^0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="192"/>
+        <location filename="reporterdialogbase.ui" line="185"/>
         <source>10^6</source>
         <translation></translation>
     </message>
@@ -258,7 +263,7 @@ Plugin will not be enabled.</source>
         <translation type="obsolete">Файл настроек %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="355"/>
+        <location filename="reporterdialog.py" line="387"/>
         <source>%p% processing: %1</source>
         <translation>%p% обработка: %1</translation>
     </message>
@@ -268,17 +273,17 @@ Plugin will not be enabled.</source>
         <translation>Taimyr - Reporter</translation>
     </message>
     <message>
-        <location filename="reporterdialogbase.ui" line="185"/>
+        <location filename="reporterdialogbase.ui" line="178"/>
         <source>10^4</source>
         <translation>10^4</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="269"/>
+        <location filename="reporterdialog.py" line="303"/>
         <source>Config file: %1</source>
         <translation>Файл настроек: %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="271"/>
+        <location filename="reporterdialog.py" line="305"/>
         <source>No profile loaded</source>
         <translation>Профиль не загружен</translation>
     </message>
