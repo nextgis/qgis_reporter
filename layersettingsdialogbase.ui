@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>291</width>
-    <height>158</height>
+    <height>212</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,6 +37,16 @@
    </item>
    <item>
     <widget class="QComboBox" name="cmbLabelField"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Comment</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="leComment"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

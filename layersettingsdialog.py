@@ -53,6 +53,9 @@ class LayerSettingsDialog( QDialog, Ui_LayerSettingsDialog ):
   def setLabelField( self, fieldName ):
     self.cmbLabelField.setCurrentIndex( self.cmbLabelField.findText( fieldName ) )
 
+  def setComment( self, text ):
+    self.leComment.setText( text )
+
 #***********************************************************************
 
   def areasReport( self ):
@@ -63,3 +66,6 @@ class LayerSettingsDialog( QDialog, Ui_LayerSettingsDialog ):
 
   def getLabelField( self ):
     return self.cmbLabelField.currentText()
+
+  def getComment( self ):
+    return self.leComment.text()
