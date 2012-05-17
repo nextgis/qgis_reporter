@@ -186,10 +186,33 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     if layerElement == None:
       return
 
-    d = layersettingsdialog.LayerSettingsDialog( self )
+    vLayer = utils.getVectorLayerByName( item.text( 0 ) )
+    vProvider = vLayer.dataProvider()
+
+    # check layer renderer and determine classification field
+    fieldName = None
+    fieldIndex = None
+
+    if vLayer.isUsingRendererV2():
+      renderer = vLayer.rendererV2()
+      rendererType = renderer.type()
+      fieldName = renderer.classAttribute()
+      fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+    else:
+      renderer = vLayer.renderer()
+      rendererType = renderer.name()
+      fieldIndex = renderer.classificationField()
+      fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+
+    d = layersettingsdialog.LayerSettingsDialog( self, vLayer )
 
     d.setAreasReport( utils.hasReport( layerElement, "area" ) )
     d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
+    myLabelFieldName = utils.labelFieldName( layerElement )
+    if myLabelFieldName.isEmpty():
+      d.setLabelField( fieldName )
+    else:
+      d.setLabelField( myLabelFieldName )
 
     if not d.exec_() == QDialog.Accepted:
       return
@@ -205,6 +228,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     else:
       utils.removeLayerReport( layerElement, "objects" )
 
+    utils.setLabelFieldName( self.config, layerElement, d.getLabelField() )
+
   def toggleLayer( self, item, column ):
     if self.config:
       if item.checkState( 0 ) == Qt.Checked:
@@ -212,10 +237,33 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
         layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
 
-        d = layersettingsdialog.LayerSettingsDialog( self )
+        vLayer = utils.getVectorLayerByName( item.text( 0 ) )
+        vProvider = vLayer.dataProvider()
+
+        # check layer renderer and determine classification field
+        fieldName = None
+        fieldIndex = None
+
+        if vLayer.isUsingRendererV2():
+          renderer = vLayer.rendererV2()
+          rendererType = renderer.type()
+          fieldName = renderer.classAttribute()
+          fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+        else:
+          renderer = vLayer.renderer()
+          rendererType = renderer.name()
+          fieldIndex = renderer.classificationField()
+          fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+
+        d = layersettingsdialog.LayerSettingsDialog( self, vLayer )
 
         d.setAreasReport( utils.hasReport( layerElement, "area" ) )
         d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
+        myLabelFieldName = utils.labelFieldName( layerElement )
+        if myLabelFieldName.isEmpty():
+          d.setLabelField( fieldName )
+        else:
+          d.setLabelField( myLabelFieldName )
 
         if not d.exec_() == QDialog.Accepted:
           item.setCheckState( 0, Qt.Unchecked )
@@ -231,6 +279,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
           utils.addLayerReport( self.config, layerElement, "objects" )
         else:
           utils.removeLayerReport( layerElement, "objects" )
+
+        utils.setLabelFieldName( self.config, layerElement, d.getLabelField() )
       else:
         utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 

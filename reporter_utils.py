@@ -81,6 +81,16 @@ def fieldNameByIndex( provider, fieldIndex ):
     if v == fieldIndex:
       return k
 
+def getFieldNames( layer ):
+  provider = layer.dataProvider()
+  provider.select( provider.attributeIndexes() )
+  fieldMap = provider.fields()
+  fieldNames = []
+  for idx, field in fieldMap.iteritems():
+    if not field.name() in fieldNames:
+      fieldNames.append( unicode( field.name() ) )
+  return sorted( fieldNames, cmp=locale.strcoll )
+
 # *****************************************************************************
 # various filedialogs
 # *****************************************************************************
@@ -192,11 +202,31 @@ def hasReport( elem, rptName ):
     child = child.nextSiblingElement()
   return False
 
+def labelFieldName( elem ):
+  child = elem.firstChildElement()
+  while not child.isNull():
+    if child.tagName() == "field":
+      return child.attribute( "name" )
+    child = child.nextSiblingElement()
+  return QString()
+
+def setLabelFieldName( doc, elem, fieldName ):
+  fld = doc.createElement( "field" )
+  fld.setAttribute( "name", fieldName )
+  elem.appendChild( fld )
+
 def layersWithoutReports( root ):
   missed = []
   child = root.firstChildElement()
   while not child.isNull():
-    if not child.hasChildNodes():
+    tmp = child.childNodes()
+    noReports = True
+    for i in xrange( tmp.count() ):
+      n = tmp.at( i ).toElement()
+      if n.tagName() == "report":
+        noReports = False
+        break
+    if noReports:
       missed.append( child.attribute( "name" ) )
     child = child.nextSiblingElement()
   return missed
