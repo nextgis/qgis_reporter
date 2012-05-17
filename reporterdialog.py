@@ -303,6 +303,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       self.lblProfilePath.setText( self.tr( "Config file: %1" ) .arg( settings.value( "lastProfile", "" ).toString() ) )
     else:
       self.lblProfilePath.setText( self.tr( "No profile loaded" ) )
+    self.txtComment.setPlainText( settings.value( "comment", "" ).toString() )
 
     # dimensioning buttons
     if settings.value( "dimensioning", "none" ).toString() == "none":
@@ -319,6 +320,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     settings.setValue( "mapsInReport", self.chkAddMapsToReport.isChecked() )
     if self.lblProfilePath.text().split( ": " ).count() > 1:
       settings.setValue( "lastProfile", self.lblProfilePath.text().split( ": " )[ 1 ] )
+    settings.setValue( "comment", self.txtComment.toPlainText() )
 
     # dimensioning buttons
     if self.rbSimpleUnits.isChecked():
@@ -517,6 +519,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       # print title
       writer.addTitle( layerName )
+      writer.addDescription( self.txtComment.toPlainText() )
 
       if utils.hasReport( layerConfig, "area" ):
         writer.addAreaTable( fieldName, dataArea )

@@ -43,6 +43,9 @@ class WordMLWriter( QObject ):
     self.report += QString( '<w:r><w:rPr><w:b/></w:rPr><w:t>%1</w:t></w:r>' ).arg( layerName )
     self.report += '</w:p>\n'
 
+  def addDescription( self, text ):
+    self.report += QString( '<w:p><w:r><w:t>%1</w:t></w:r></w:p>\n' ).arg( text )
+
   def addAreaTable( self, fieldName, tableData ):
     # table
     self.report += '<w:tbl><w:tblPr><w:tblStyle w:val="MyTable"/><w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="01E0"/></w:tblPr>\n'
