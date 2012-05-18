@@ -525,7 +525,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       # print title
       writer.addTitle( layerName )
-      writer.addDescription( self.txtComment.toPlainText() )
+      writer.addDescription( self.txtComment.toPlainText() + " " + utils.layerComment( layerConfig ) )
 
       if utils.hasReport( layerConfig, "area" ):
         writer.addAreaTable( fieldName, dataArea )

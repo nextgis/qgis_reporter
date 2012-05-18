@@ -216,10 +216,18 @@ def setLabelFieldName( doc, elem, fieldName ):
   elem.appendChild( fld )
 
 def layerComment( elem ):
-  return ""
+  child = elem.firstChildElement()
+  while not child.isNull():
+    if child.tagName() == "comment":
+      return child.text()
+    child = child.nextSiblingElement()
+  return QString()
 
 def setLayerComment( doc, elem, comment ):
-  pass
+  cmnt = doc.createElement( "comment" )
+  txt = doc.createTextNode( comment )
+  cmnt.appendChild( txt )
+  elem.appendChild( cmnt )
 
 def layersWithoutReports( root ):
   missed = []
