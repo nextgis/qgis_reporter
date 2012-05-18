@@ -427,11 +427,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       # override fieldIndex using layer from config
       tryLegendLabels = False
+      attributeIndexes = []
       labelFieldIndex = utils.fieldIndexByName( vProvider, labelFieldName )
       if labelFieldIndex == fieldIndex:
         tryLegendLabels = True
+        attributeIndexes.append( fieldIndex )
       else:
-        fieldIndex = labelFieldIndex
+        attributeIndexes.append( fieldIndex )
+        attributeIndexes.append( labelFieldIndex )
 
       # unsupported renderer, process next layer
       if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
@@ -453,6 +456,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
       dataArea.clear()
       dataObjects.clear()
+      legendCategories = []
       featureClass = None
       category = None
 
@@ -467,14 +471,14 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       # find intersections in data layer
       intersections = spatialIndex.intersects( geom.boundingBox() )
       for i in intersections:
-        vProvider.featureAtId( int( i ), currentFeat, True, [ fieldIndex ] )
+        vProvider.featureAtId( int( i ), currentFeat, True, attributeIndexes )
         tmpGeom = QgsGeometry( currentFeat.geometry() )
         # precision test for intersection
         if geom.intersects( tmpGeom ):
           # get data for area report
           attrMap = currentFeat.attributeMap()
-          featureClass = attrMap.values()[ 0 ].toString()
           if tryLegendLabels:
+            featureClass = attrMap[ fieldIndex ].toString()
             if vLayer.isUsingRendererV2():
               category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
             else:
@@ -482,8 +486,26 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
 
             if category.isEmpty():
               category = featureClass
+            if category not in legendCategories:
+              legendCategories.append( category )
           else:
-            category = featureClass
+            category = attrMap[ labelFieldIndex ].toString()
+            tmp = attrMap[ fieldIndex ].toString()
+            if tmp not in legendCategories:
+              legendCategories.append( tmp )
+
+
+          #~ featureClass = attrMap.values()[ 0 ].toString()
+          #~ if tryLegendLabels:
+            #~ if vLayer.isUsingRendererV2():
+              #~ category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
+            #~ else:
+              #~ category = categories[ attrMap.values()[ 0 ].toString() ].label()
+#~
+            #~ if category.isEmpty():
+              #~ category = featureClass
+          #~ else:
+            #~ category = featureClass
 
           # count objects
           if category not in dataObjects:
@@ -513,7 +535,8 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       rect.setYMaximum( rect.yMaximum() + dh )
 
       # create map
-      mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR, dataObjects.keys() )
+      #mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR, dataObjects.keys() )
+      mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR, legendCategories )
 
       # create all necessary reports
       layerConfig = utils.findLayerInConfig( self.cfgRoot, layerName )
