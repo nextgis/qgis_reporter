@@ -28,6 +28,11 @@
         <source>Label table row using values of this field</source>
         <translation>Подписывать строки таблиц используя поле</translation>
     </message>
+    <message>
+        <location filename="layersettingsdialogbase.ui" line="44"/>
+        <source>Comment</source>
+        <translation>Комментарий</translation>
+    </message>
 </context>
 <context>
     <name>Reporter</name>
@@ -102,7 +107,7 @@ Plugin will not be enabled.</source>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="336"/>
+        <location filename="reporterdialog.py" line="344"/>
         <source>Reporter</source>
         <translation>Reporter</translation>
     </message>
@@ -223,7 +228,7 @@ Plugin will not be enabled.</source>
 %2.</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="336"/>
+        <location filename="reporterdialog.py" line="344"/>
         <source>Please specify output report file</source>
         <translation>Пожалуйста укажите файл отчета</translation>
     </message>
@@ -263,7 +268,7 @@ Plugin will not be enabled.</source>
         <translation type="obsolete">Файл настроек %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="387"/>
+        <location filename="reporterdialog.py" line="395"/>
         <source>%p% processing: %1</source>
         <translation>%p% обработка: %1</translation>
     </message>
@@ -278,12 +283,12 @@ Plugin will not be enabled.</source>
         <translation>10^4</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="303"/>
+        <location filename="reporterdialog.py" line="309"/>
         <source>Config file: %1</source>
         <translation>Файл настроек: %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="305"/>
+        <location filename="reporterdialog.py" line="311"/>
         <source>No profile loaded</source>
         <translation>Профиль не загружен</translation>
     </message>
@@ -291,22 +296,22 @@ Plugin will not be enabled.</source>
 <context>
     <name>WordMLWriter</name>
     <message>
-        <location filename="wordmlwriter.py" line="54"/>
+        <location filename="wordmlwriter.py" line="57"/>
         <source>Area</source>
         <translation>Площадь</translation>
     </message>
     <message>
-        <location filename="wordmlwriter.py" line="55"/>
+        <location filename="wordmlwriter.py" line="58"/>
         <source>Percents</source>
         <translation>% площади</translation>
     </message>
     <message>
-        <location filename="wordmlwriter.py" line="82"/>
+        <location filename="wordmlwriter.py" line="85"/>
         <source>Object</source>
         <translation>Объект</translation>
     </message>
     <message>
-        <location filename="wordmlwriter.py" line="83"/>
+        <location filename="wordmlwriter.py" line="86"/>
         <source>Count</source>
         <translation>Количество</translation>
     </message>
