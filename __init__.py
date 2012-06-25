@@ -2,7 +2,7 @@
 
 #******************************************************************************
 #
-# Taimyr - Reporter
+# Reporter
 # ---------------------------------------------------------
 # Generates reports.
 #
@@ -26,7 +26,7 @@
 #******************************************************************************
 
 def name():
-  return "Taimyr - Reporter"
+  return "Reporter"
 
 def description():
   return "Generates reports"
@@ -35,7 +35,7 @@ def category():
   return "Vector"
 
 def version():
-  return "0.0.1"
+  return "1.0.0"
 
 def qgisMinimumVersion():
   return "1.0.0"

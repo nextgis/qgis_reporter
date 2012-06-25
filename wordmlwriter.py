@@ -2,7 +2,7 @@
 
 #******************************************************************************
 #
-# Taimyr - Reporter
+# Reporter
 # ---------------------------------------------------------
 # Generates reports.
 #
@@ -42,9 +42,11 @@ class WordMLWriter( QObject ):
     self.report += '<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
     self.report += QString( '<w:r><w:rPr><w:b/></w:rPr><w:t>%1</w:t></w:r>' ).arg( layerName )
     self.report += '</w:p>\n'
+    self.report += '<w:p></w:p>\n'
 
   def addDescription( self, text ):
     self.report += QString( '<w:p><w:r><w:t>%1</w:t></w:r></w:p>\n' ).arg( text )
+    self.report += '<w:p></w:p>\n'
 
   def addAreaTable( self, fieldName, tableData ):
     # table

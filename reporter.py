@@ -2,7 +2,7 @@
 
 #******************************************************************************
 #
-# Taimyr - Reporter
+# Reporter
 # ---------------------------------------------------------
 # Generates reports.
 #
@@ -75,9 +75,9 @@ class ReporterPlugin( object ):
                            QCoreApplication.translate( "Reporter", "This version of Reporter requires at least QGIS version 1.0.0\nPlugin will not be enabled." ) )
       return None
 
-    self.actionRun = QAction( QIcon( ":/icons/reporter.png" ), "Taimyr - Reporter", self.iface.mainWindow() )
-    self.actionRun.setStatusTip( QCoreApplication.translate( "Reporter", "Generates report" ) )
-    self.actionAbout = QAction( QIcon( ":/icons/about.png" ), "About Taimyr - Reporter", self.iface.mainWindow() )
+    self.actionRun = QAction( QIcon( ":/icons/reporter.png" ), "Reporter", self.iface.mainWindow() )
+    self.actionRun.setStatusTip( QCoreApplication.translate( "Reporter", "Generates reports" ) )
+    self.actionAbout = QAction( QIcon( ":/icons/about.png" ), QCoreApplication.translate( "Reporter", "About Reporter" ), self.iface.mainWindow() )
 
     QObject.connect( self.actionRun, SIGNAL( "triggered()" ), self.run )
     QObject.connect( self.actionAbout, SIGNAL( "triggered()" ), self.about )
@@ -103,15 +103,15 @@ class ReporterPlugin( object ):
 
   def about( self ):
     dlgAbout = QDialog()
-    dlgAbout.setWindowTitle( QApplication.translate( "Reporter", "About Taimyr - Reporter" ) )
+    dlgAbout.setWindowTitle( QApplication.translate( "Reporter", "About Reporter" ) )
     lines = QVBoxLayout( dlgAbout )
-    title = QLabel( QApplication.translate( "Reporter", "<b>Taimyr - Reporter</b>" ) )
+    title = QLabel( QApplication.translate( "Reporter", "<b>Reporter</b>" ) )
     title.setAlignment( Qt.AlignHCenter | Qt.AlignVCenter )
     lines.addWidget( title )
     ver = QLabel( QApplication.translate( "Reporter", "Version: %1" ).arg( version() ) )
     ver.setAlignment( Qt.AlignHCenter | Qt.AlignVCenter )
     lines.addWidget( ver )
-    lines.addWidget( QLabel( QApplication.translate( "Reporter", "Generates report." ) ) )
+    lines.addWidget( QLabel( QApplication.translate( "Reporter", "Generates reports." ) ) )
     lines.addWidget( QLabel( QApplication.translate( "Reporter", "<b>Developers:</b>" ) ) )
     lines.addWidget( QLabel( "  NextGIS, http://nextgis.org" ) )
     lines.addWidget( QLabel( QApplication.translate( "Reporter", "<b>Homepage:</b>") ) )
@@ -123,10 +123,10 @@ class ReporterPlugin( object ):
       localeFullName = QSettings().value( "locale/userLocale", QVariant( "" ) ).toString()
 
     localeShortName = localeFullName[ 0:2 ]
-    if localeShortName in [ "ru", "uk" ]:
-      link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter.html\">http://gis-lab.info/qa/reporter.html</a>" )
-    else:
-      link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter-eng.html\">http://gis-lab.info/qa/reporter-eng.html</a>" )
+    #if localeShortName in [ "ru", "uk" ]:
+    link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter.html\">http://gis-lab.info/qa/reporter.html</a>" )
+    #else:
+    #  link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter-eng.html\">http://gis-lab.info/qa/reporter-eng.html</a>" )
 
     link.setOpenExternalLinks( True )
     lines.addWidget( link )

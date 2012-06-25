@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<!DOCTYPE TS><TS version="1.1" language="ru_RU">
 <context>
     <name>LayerSettingsDialog</name>
     <message>
@@ -51,7 +50,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporter.py" line="79"/>
         <source>Generates report</source>
-        <translation>Создает отчет</translation>
+        <translation type="obsolete">Создает отчет</translation>
     </message>
     <message>
         <location filename="reporter.py" line="101"/>
@@ -61,12 +60,12 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporter.py" line="106"/>
         <source>About Reporter</source>
-        <translation type="obsolete">О Reporter</translation>
+        <translation>О Reporter</translation>
     </message>
     <message>
         <location filename="reporter.py" line="108"/>
         <source>&lt;b&gt;Reporter&lt;/b&gt;</source>
-        <translation type="obsolete">&lt;b&gt;Reporter&lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Reporter&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="reporter.py" line="111"/>
@@ -76,7 +75,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporter.py" line="114"/>
         <source>Generates report.</source>
-        <translation>Создает отчет.</translation>
+        <translation type="obsolete">Создает отчет.</translation>
     </message>
     <message>
         <location filename="reporter.py" line="115"/>
@@ -96,18 +95,28 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporter.py" line="106"/>
         <source>About Taimyr - Reporter</source>
-        <translation>О Taimyr - Reporter</translation>
+        <translation type="obsolete">О Taimyr - Reporter</translation>
     </message>
     <message>
         <location filename="reporter.py" line="108"/>
         <source>&lt;b&gt;Taimyr - Reporter&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Taimyr - Reporter&lt;/b&gt;</translation>
+        <translation type="obsolete">&lt;b&gt;Taimyr - Reporter&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="reporter.py" line="79"/>
+        <source>Generates reports</source>
+        <translation>Создает отчеты</translation>
+    </message>
+    <message>
+        <location filename="reporter.py" line="114"/>
+        <source>Generates reports.</source>
+        <translation>Создает отчеты.</translation>
     </message>
 </context>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="344"/>
+        <location filename="reporterdialog.py" line="354"/>
         <source>Reporter</source>
         <translation>Reporter</translation>
     </message>
@@ -228,14 +237,14 @@ Plugin will not be enabled.</source>
 %2.</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="344"/>
+        <location filename="reporterdialog.py" line="354"/>
         <source>Please specify output report file</source>
         <translation>Пожалуйста укажите файл отчета</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="364"/>
+        <location filename="reporterdialog.py" line="601"/>
         <source>Completed!</source>
-        <translation type="obsolete">Завершено!</translation>
+        <translation>Завершено!</translation>
     </message>
     <message>
         <location filename="reporterdialogbase.ui" line="24"/>
@@ -268,7 +277,7 @@ Plugin will not be enabled.</source>
         <translation type="obsolete">Файл настроек %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="395"/>
+        <location filename="reporterdialog.py" line="405"/>
         <source>%p% processing: %1</source>
         <translation>%p% обработка: %1</translation>
     </message>
@@ -283,35 +292,45 @@ Plugin will not be enabled.</source>
         <translation>10^4</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="309"/>
+        <location filename="reporterdialog.py" line="319"/>
         <source>Config file: %1</source>
         <translation>Файл настроек: %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="311"/>
+        <location filename="reporterdialog.py" line="321"/>
         <source>No profile loaded</source>
         <translation>Профиль не загружен</translation>
+    </message>
+    <message>
+        <location filename="reporterdialogbase.ui" line="195"/>
+        <source>Common text (will be added before each layer&apos;s description)</source>
+        <translation>Общий текст (будет добавлен перед описанием слоя)</translation>
+    </message>
+    <message>
+        <location filename="reporterdialog.py" line="601"/>
+        <source>Done</source>
+        <translation>Готово</translation>
     </message>
 </context>
 <context>
     <name>WordMLWriter</name>
     <message>
-        <location filename="wordmlwriter.py" line="57"/>
+        <location filename="wordmlwriter.py" line="59"/>
         <source>Area</source>
         <translation>Площадь</translation>
     </message>
     <message>
-        <location filename="wordmlwriter.py" line="58"/>
+        <location filename="wordmlwriter.py" line="60"/>
         <source>Percents</source>
         <translation>% площади</translation>
     </message>
     <message>
-        <location filename="wordmlwriter.py" line="85"/>
+        <location filename="wordmlwriter.py" line="87"/>
         <source>Object</source>
         <translation>Объект</translation>
     </message>
     <message>
-        <location filename="wordmlwriter.py" line="86"/>
+        <location filename="wordmlwriter.py" line="88"/>
         <source>Count</source>
         <translation>Количество</translation>
     </message>

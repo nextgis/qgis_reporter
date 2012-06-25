@@ -2,7 +2,7 @@
 
 #******************************************************************************
 #
-# Taimyr - Reporter
+# Reporter
 # ---------------------------------------------------------
 # Generates reports.
 #
@@ -250,11 +250,23 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         if vLayer.isUsingRendererV2():
           renderer = vLayer.rendererV2()
           rendererType = renderer.type()
+
+          if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+            print "Invalid renderer type! Skip this layer..."
+            item.setCheckState( 0, Qt.Unchecked )
+            return
+
           fieldName = renderer.classAttribute()
           fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
         else:
           renderer = vLayer.renderer()
           rendererType = renderer.name()
+
+          if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+            print "Invalid renderer type! Skip this layer..."
+            item.setCheckState( 0, Qt.Unchecked )
+            return
+
           fieldIndex = renderer.classificationField()
           fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
 
@@ -413,6 +425,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       if vLayer.isUsingRendererV2():
         renderer = vLayer.rendererV2()
         rendererType = renderer.type()
+        if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+          print "Invalid renderer type! Skip this layer..."
+          continue
 
         fieldName = renderer.classAttribute()
         fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
@@ -420,6 +435,9 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       else:
         renderer = vLayer.renderer()
         rendererType = renderer.name()
+        if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+          print "Invalid renderer type! Skip this layer..."
+          continue
 
         fieldIndex = renderer.classificationField()
         fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
@@ -581,4 +599,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.progressBar.setValue( 0 )
 
     QApplication.restoreOverrideCursor()
+
+    QMessageBox.information( self, self.tr( "Done" ), self.tr( "Completed!" ) )
+
     self.btnOk.setEnabled( True )

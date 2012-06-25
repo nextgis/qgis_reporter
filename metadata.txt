@@ -1,8 +1,8 @@
 [general]
-name = Taimyr - Reporter
+name = Reporter
 description = Generates reports
 category = Vector
-version = 0.0.1
+version = 1.0.0
 qgisMinimumVersion = 1.0.0
 
 icon = icons/reporter.png
