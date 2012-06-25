@@ -93,6 +93,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.config.appendChild( self.cfgRoot )
 
     self.btnSaveConfig.setEnabled( True )
+    self.cleanupConfigAndGui()
     self.lstLayers.setEnabled( True )
 
   def loadConfiguration( self ):
@@ -251,24 +252,30 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
           renderer = vLayer.rendererV2()
           rendererType = renderer.type()
 
-          if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+          if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+            fieldName = renderer.classAttribute()
+            fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+          elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
             print "Invalid renderer type! Skip this layer..."
             item.setCheckState( 0, Qt.Unchecked )
             return
-
-          fieldName = renderer.classAttribute()
-          fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
         else:
           renderer = vLayer.renderer()
           rendererType = renderer.name()
 
-          if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+          if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+            fieldIndex = renderer.classificationField()
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
             print "Invalid renderer type! Skip this layer..."
             item.setCheckState( 0, Qt.Unchecked )
             return
-
-          fieldIndex = renderer.classificationField()
-          fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
 
         d = layersettingsdialog.LayerSettingsDialog( self, vLayer )
 
@@ -425,23 +432,39 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       if vLayer.isUsingRendererV2():
         renderer = vLayer.rendererV2()
         rendererType = renderer.type()
-        if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+        if rendererType in [ "singleSymbol", "Single Symbol" ]:
+          tmp = utils.labelFieldName( layerElement )
+          if tmp.isEmpty():
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
+            fieldName = tmp
+            fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+        elif rendererType in [ "categorizedSymbol", "Unique Value" ]:
+          fieldName = renderer.classAttribute()
+          fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+          categories = renderer.categories()
+        else:
           print "Invalid renderer type! Skip this layer..."
           continue
-
-        fieldName = renderer.classAttribute()
-        fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
-        categories = renderer.categories()
       else:
         renderer = vLayer.renderer()
         rendererType = renderer.name()
-        if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+        if rendererType in [ "singleSymbol", "Single Symbol" ]:
+          tmp = utils.labelFieldName( layerElement )
+          if tmp.isEmpty():
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
+            fieldName = tmp
+            fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+        elif rendererType in [ "categorizedSymbol", "Unique Value" ]:
+          fieldIndex = renderer.classificationField()
+          fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          categories = renderer.symbolMap()
+        else:
           print "Invalid renderer type! Skip this layer..."
           continue
-
-        fieldIndex = renderer.classificationField()
-        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
-        categories = renderer.symbolMap()
 
       # override fieldIndex using layer from config
       tryLegendLabels = False
@@ -455,7 +478,7 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         attributeIndexes.append( labelFieldIndex )
 
       # unsupported renderer, process next layer
-      if rendererType not in [ "categorizedSymbol", "Unique Value" ]:
+      if rendererType not in [ "categorizedSymbol", "Unique Value", "singleSymbol", "Single Symbol" ]:
         print "Invalid renderer type! Skip this layer..."
         continue
 
@@ -498,38 +521,35 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
           if tryLegendLabels:
             featureClass = attrMap[ fieldIndex ].toString()
             if vLayer.isUsingRendererV2():
-              category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
+              if vLayer.rendererV2().type() in [ "categorizedSymbol", "Unique Value" ]:
+                category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
             else:
-              category = categories[ attrMap.values()[ 0 ].toString() ].label()
+              if vLayer.renderer().name() in [ "categorizedSymbol", "Unique Value" ]:
+                category = categories[ attrMap.values()[ 0 ].toString() ].label()
 
-            if category.isEmpty():
-              category = featureClass
-            if category not in legendCategories:
-              legendCategories.append( category )
+            if categories is not None:
+              if category.isEmpty():
+                category = featureClass
+              if category not in legendCategories:
+                legendCategories.append( category )
           else:
-            category = attrMap[ labelFieldIndex ].toString()
-            tmp = attrMap[ fieldIndex ].toString()
-            if tmp not in legendCategories:
-              legendCategories.append( tmp )
-
-
-          #~ featureClass = attrMap.values()[ 0 ].toString()
-          #~ if tryLegendLabels:
-            #~ if vLayer.isUsingRendererV2():
-              #~ category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
-            #~ else:
-              #~ category = categories[ attrMap.values()[ 0 ].toString() ].label()
-#~
-            #~ if category.isEmpty():
-              #~ category = featureClass
-          #~ else:
-            #~ category = featureClass
+            if categories is not None:
+              category = attrMap[ labelFieldIndex ].toString()
+              tmp = attrMap[ fieldIndex ].toString()
+              if tmp not in legendCategories:
+                legendCategories.append( tmp )
 
           # count objects
-          if category not in dataObjects:
-            dataObjects[ category ] = 1
+          if categories is not None:
+            if category not in dataObjects:
+              dataObjects[ category ] = 1
+            else:
+              dataObjects[ category ] += 1
           else:
-            dataObjects[ category ] += 1
+            if str(fieldName) not in dataObjects:
+              dataObjects[ str(fieldName) ] = 1
+            else:
+              dataObjects[ str(fieldName) ] += 1
 
           # calculate intersection area
           intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
@@ -538,10 +558,16 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
             intSym = geom.symDifference( tmpGeom )
             intGeom = QgsGeometry( intCom.difference( intSym ) )
 
-          if category not in dataArea:
-            dataArea[ category ] = float( intGeom.area() * coef )
+          if categories is not None:
+            if category not in dataArea:
+              dataArea[ category ] = float( intGeom.area() * coef )
+            else:
+              dataArea[ category ] += float( intGeom.area() * coef )
           else:
-            dataArea[ category ] += float( intGeom.area() * coef )
+            if str(fieldName) not in dataArea:
+              dataArea[ str(fieldName) ] = float( intGeom.area() * coef )
+            else:
+              dataArea[ str(fieldName) ] += float( intGeom.area() * coef )
 
       # get extent of the overlay geometry (for reports)
       rect = geom.boundingBox()

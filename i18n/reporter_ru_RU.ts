@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="ru_RU">
+<!DOCTYPE TS>
+<TS version="2.0" language="ru_RU">
 <context>
     <name>LayerSettingsDialog</name>
     <message>
@@ -55,17 +56,17 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="reporter.py" line="101"/>
         <source>Reporter</source>
-        <translation>Reporter</translation>
+        <translation>Репортер</translation>
     </message>
     <message>
         <location filename="reporter.py" line="106"/>
         <source>About Reporter</source>
-        <translation>О Reporter</translation>
+        <translation>О Репортер</translation>
     </message>
     <message>
         <location filename="reporter.py" line="108"/>
         <source>&lt;b&gt;Reporter&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Reporter&lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Репортер&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="reporter.py" line="111"/>
@@ -116,9 +117,9 @@ Plugin will not be enabled.</source>
 <context>
     <name>ReporterDialog</name>
     <message>
-        <location filename="reporterdialog.py" line="354"/>
+        <location filename="reporterdialog.py" line="356"/>
         <source>Reporter</source>
-        <translation>Reporter</translation>
+        <translation>Репортер</translation>
     </message>
     <message>
         <location filename="reporterdialogbase.ui" line="35"/>
@@ -237,12 +238,12 @@ Plugin will not be enabled.</source>
 %2.</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="354"/>
+        <location filename="reporterdialog.py" line="356"/>
         <source>Please specify output report file</source>
         <translation>Пожалуйста укажите файл отчета</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="601"/>
+        <location filename="reporterdialog.py" line="603"/>
         <source>Completed!</source>
         <translation>Завершено!</translation>
     </message>
@@ -277,7 +278,7 @@ Plugin will not be enabled.</source>
         <translation type="obsolete">Файл настроек %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="405"/>
+        <location filename="reporterdialog.py" line="407"/>
         <source>%p% processing: %1</source>
         <translation>%p% обработка: %1</translation>
     </message>
@@ -292,12 +293,12 @@ Plugin will not be enabled.</source>
         <translation>10^4</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="319"/>
+        <location filename="reporterdialog.py" line="321"/>
         <source>Config file: %1</source>
         <translation>Файл настроек: %1</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="321"/>
+        <location filename="reporterdialog.py" line="323"/>
         <source>No profile loaded</source>
         <translation>Профиль не загружен</translation>
     </message>
@@ -307,7 +308,7 @@ Plugin will not be enabled.</source>
         <translation>Общий текст (будет добавлен перед описанием слоя)</translation>
     </message>
     <message>
-        <location filename="reporterdialog.py" line="601"/>
+        <location filename="reporterdialog.py" line="603"/>
         <source>Done</source>
         <translation>Готово</translation>
     </message>
