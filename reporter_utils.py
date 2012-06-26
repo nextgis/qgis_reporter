@@ -182,24 +182,33 @@ def findLayerInConfig( root, layerName ):
   return None
 
 def addLayerReport( doc, elem, rptName ):
-  rpt = doc.createElement( "report" )
-  rpt.setAttribute( "name", rptName )
-  elem.appendChild( rpt )
+  child = elem.firstChildElement( "report" )
+  found = False
+  while not child.isNull():
+    if child.attribute( "name" ) == rptName:
+      found = True
+      break
+    child = child.nextSiblingElement( "report" )
+
+  if not found:
+    rpt = doc.createElement( "report" )
+    rpt.setAttribute( "name", rptName )
+    elem.appendChild( rpt )
 
 def removeLayerReport( elem, rptName ):
-  child = elem.firstChildElement()
+  child = elem.firstChildElement( "report" )
   while not child.isNull():
     if child.attribute( "name" ) == rptName:
       elem.removeChild( child )
       return
-    child = child.nextSiblingElement()
+    child = child.nextSiblingElement( "report" )
 
 def hasReport( elem, rptName ):
-  child = elem.firstChildElement()
+  child = elem.firstChildElement( "report" )
   while not child.isNull():
     if child.attribute( "name" ) == rptName:
       return True
-    child = child.nextSiblingElement()
+    child = child.nextSiblingElement( "report" )
   return False
 
 def labelFieldName( elem ):
@@ -211,23 +220,44 @@ def labelFieldName( elem ):
   return QString()
 
 def setLabelFieldName( doc, elem, fieldName ):
-  fld = doc.createElement( "field" )
-  fld.setAttribute( "name", fieldName )
-  elem.appendChild( fld )
+  child = elem.firstChildElement("field")
+  found = False
+  while not child.isNull():
+    found = True
+    break
+    child = child.nextSiblingElement( "field" )
+
+  if not found:
+    fld = doc.createElement( "field" )
+    fld.setAttribute( "name", fieldName )
+    elem.appendChild( fld )
+  else:
+    child.setAttribute( "name", fieldName )
 
 def layerComment( elem ):
-  child = elem.firstChildElement()
+  child = elem.firstChildElement( "comment" )
   while not child.isNull():
     if child.tagName() == "comment":
       return child.text()
-    child = child.nextSiblingElement()
+    child = child.nextSiblingElement( "comment" )
   return QString()
 
 def setLayerComment( doc, elem, comment ):
-  cmnt = doc.createElement( "comment" )
-  txt = doc.createTextNode( comment )
-  cmnt.appendChild( txt )
-  elem.appendChild( cmnt )
+  child = elem.firstChildElement( "comment" )
+  found = False
+  while not child.isNull():
+    found = True
+    break
+    child = child.nextSiblingElement( "comment" )
+
+  if not found:
+    cmnt = doc.createElement( "comment" )
+    txt = doc.createTextNode( comment )
+    cmnt.appendChild( txt )
+    elem.appendChild( cmnt )
+  else:
+    txt = child.childNodes().at( 0 )
+    txt.setNodeValue( comment )
 
 def layersWithoutReports( root ):
   missed = []

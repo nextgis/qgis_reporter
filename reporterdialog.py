@@ -197,13 +197,27 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     if vLayer.isUsingRendererV2():
       renderer = vLayer.rendererV2()
       rendererType = renderer.type()
-      fieldName = renderer.classAttribute()
-      fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+      if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+        fieldName = renderer.classAttribute()
+        fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+      elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+        fieldIndex = 0
+        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+      else:
+        print "Invalid renderer type! Skip this layer..."
+        return
     else:
       renderer = vLayer.renderer()
       rendererType = renderer.name()
-      fieldIndex = renderer.classificationField()
-      fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+      if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+        fieldIndex = renderer.classificationField()
+        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+      elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+        fieldIndex = 0
+        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+      else:
+        print "Invalid renderer type! Skip this layer..."
+        return
 
     d = layersettingsdialog.LayerSettingsDialog( self, vLayer )
 
