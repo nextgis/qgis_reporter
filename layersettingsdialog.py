@@ -6,7 +6,7 @@
 # ---------------------------------------------------------
 # Generates reports.
 #
-# Copyright (C) 2012 Alexander Bruy (alexander.bruy@gmail.com), NextGIS
+# Copyright (C) 2012 NextGIS, http://nextgis.org
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -33,11 +33,16 @@ from qgis.core import *
 from qgis.gui import *
 
 from ui_layersettingsdialogbase import Ui_LayerSettingsDialog
+import reporter_utils as utils
 
 class LayerSettingsDialog( QDialog, Ui_LayerSettingsDialog ):
-  def __init__( self, parent ):
+  def __init__( self, parent, layer ):
     QDialog.__init__( self, parent )
     self.setupUi( self )
+
+    self.layer = layer
+
+    self.cmbLabelField.addItems( utils.getFieldNames( self.layer ) )
 
   def setAreasReport( self, isChecked ):
     self.chkAreasTable.setChecked( isChecked )
@@ -45,8 +50,11 @@ class LayerSettingsDialog( QDialog, Ui_LayerSettingsDialog ):
   def setObjectsReport( self, isChecked ):
     self.chkObjectsTable.setChecked( isChecked )
 
-  def setOtherReport( self, isChecked ):
-    self.chkOtherData.setChecked( isChecked )
+  def setLabelField( self, fieldName ):
+    self.cmbLabelField.setCurrentIndex( self.cmbLabelField.findText( fieldName ) )
+
+  def setComment( self, text ):
+    self.leComment.setText( text )
 
 #***********************************************************************
 
@@ -56,5 +64,8 @@ class LayerSettingsDialog( QDialog, Ui_LayerSettingsDialog ):
   def objectsReport( self ):
     return self.chkObjectsTable.isChecked()
 
-  def otherReport( self ):
-    return self.chkOtherData.isChecked()
+  def getLabelField( self ):
+    return self.cmbLabelField.currentText()
+
+  def getComment( self ):
+    return self.leComment.text()

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------
 # Generates reports.
 #
-# Copyright (C) 2012 Alexander Bruy (alexander.bruy@gmail.com), NextGIS
+# Copyright (C) 2012 NextGIS, http://nextgis.org
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -35,7 +35,7 @@ from qgis.gui import *
 from ui_reporterdialogbase import Ui_ReporterDialog
 
 import layersettingsdialog
-import odfreportwriter
+import wordmlwriter
 import reporter_utils as utils
 
 class ReporterDialog( QDialog, Ui_ReporterDialog ):
@@ -57,20 +57,16 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     QObject.connect( self.btnLoadConfig, SIGNAL( "clicked ()" ), self.loadConfiguration )
     QObject.connect( self.btnSaveConfig, SIGNAL( "clicked ()" ), self.saveConfiguration )
 
-    QObject.connect( self.btnBrowse, SIGNAL( "clicked()" ), self.setOutDirectory )
+    QObject.connect( self.btnBrowse, SIGNAL( "clicked()" ), self.setOutput )
 
     self.manageGui()
 
   def manageGui( self ):
-    # load settings
-    settings = QSettings( "NextGIS", "reporter" )
-    self.chkUseSelection.setChecked( settings.value( "useSelection", False ).toBool() )
+    self.readSettings()
 
-    # setup controls
     self.btnSaveConfig.setEnabled( False )
     self.lstLayers.setEnabled( False )
 
-    # populate GUI
     self.cmbAnalysisRegion.addItems( utils.getVectorLayersNames( [ QGis.Polygon ] ) )
     layers = utils.getVectorLayersNames( [ QGis.Polygon ] )
     self.lstLayers.blockSignals( True )
@@ -80,10 +76,15 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       ti.setCheckState( 0, Qt.Unchecked )
     self.lstLayers.blockSignals( False )
 
-  def setOutDirectory( self ):
-    outDir = utils.getExistingDirectory( self, self.tr( "Select output directory" ) )
+    if self.chkLoadLastProfile.isChecked() and not self.lblProfilePath.text().isEmpty():
+      self.readConfigurationFile( self.lblProfilePath.text().split( ": " )[ 1 ] )
+
+  def setOutput( self ):
+    outDir = utils.saveReportFile( self,
+                                   self.tr( "Select output directory" ),
+                                   self.tr( "Micosoft Word 2003 (*.doc *.DOC)" ) )
     if outDir:
-      self.leOutputDirectory.setText( outDir )
+      self.leOutput.setText( outDir )
 
   def newConfiguration( self ):
     self.config = QDomDocument( "reporter_config" )
@@ -91,15 +92,20 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.cfgRoot.setAttribute( "version", "1.0" )
     self.config.appendChild( self.cfgRoot )
 
-    # enable controls
     self.btnSaveConfig.setEnabled( True )
+    self.cleanupConfigAndGui()
     self.lstLayers.setEnabled( True )
 
   def loadConfiguration( self ):
-    fileName = utils.openConfigFile( self, self.tr( "Load configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
+    fileName = utils.openConfigFile( self,
+                                     self.tr( "Load configuration" ),
+                                     self.tr( "XML files (*.xml *.XML)" ) )
     if not fileName:
       return
 
+    self.readConfigurationFile( fileName )
+
+  def readConfigurationFile( self, fileName ):
     fl = QFile( fileName )
     if not fl.open( QIODevice.ReadOnly | QIODevice.Text ):
       QMessageBox.warning( self,
@@ -146,12 +152,15 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
       for lay in missedLayers:
         utils.removeLayerFromConfig( self.cfgRoot, lay )
 
-    # enable controls
     self.btnSaveConfig.setEnabled( True )
     self.lstLayers.setEnabled( True )
 
+    self.lblProfilePath.setText( self.tr( "Config file: %1" ).arg( fileName ) )
+
   def saveConfiguration( self ):
-    fileName = utils.saveConfigFile( self, self.tr( "Save configuration" ), self.tr( "XML files (*.xml *.XML)" ) )
+    fileName = utils.saveConfigFile( self,
+                                     self.tr( "Save configuration" ),
+                                     self.tr( "XML files (*.xml *.XML)" ) )
     if not fileName:
       return
 
@@ -171,17 +180,56 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     self.config.save( out, 4 )
     fl.close()
 
+    self.lblProfilePath.setText( self.tr( "Config file: %1" ).arg( fileName ) )
+
   def openConfigDialog( self, item, column ):
     layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
     if layerElement == None:
       return
 
-    d = layersettingsdialog.LayerSettingsDialog( self )
+    vLayer = utils.getVectorLayerByName( item.text( 0 ) )
+    vProvider = vLayer.dataProvider()
 
-    # update dialog
+    # check layer renderer and determine classification field
+    fieldName = None
+    fieldIndex = None
+
+    if vLayer.isUsingRendererV2():
+      renderer = vLayer.rendererV2()
+      rendererType = renderer.type()
+      if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+        fieldName = renderer.classAttribute()
+        fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+      elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+        fieldIndex = 0
+        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+      else:
+        print "Invalid renderer type! Skip this layer..."
+        return
+    else:
+      renderer = vLayer.renderer()
+      rendererType = renderer.name()
+      if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+        fieldIndex = renderer.classificationField()
+        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+      elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+        fieldIndex = 0
+        fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+      else:
+        print "Invalid renderer type! Skip this layer..."
+        return
+
+    d = layersettingsdialog.LayerSettingsDialog( self, vLayer )
+
     d.setAreasReport( utils.hasReport( layerElement, "area" ) )
     d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
-    d.setOtherReport( utils.hasReport( layerElement, "other" ) )
+    myLabelFieldName = utils.labelFieldName( layerElement )
+    if myLabelFieldName.isEmpty():
+      d.setLabelField( fieldName )
+    else:
+      d.setLabelField( myLabelFieldName )
+
+    d.setComment( utils.layerComment( layerElement ) )
 
     if not d.exec_() == QDialog.Accepted:
       return
@@ -197,15 +245,81 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
     else:
       utils.removeLayerReport( layerElement, "objects" )
 
-    if d.otherReport():
-      utils.addLayerReport( self.config, layerElement, "other" )
-    else:
-      utils.removeLayerReport( layerElement, "other" )
+    utils.setLabelFieldName( self.config, layerElement, d.getLabelField() )
+    utils.setLayerComment( self.config, layerElement, d.getComment() )
 
   def toggleLayer( self, item, column ):
     if self.config:
       if item.checkState( 0 ) == Qt.Checked:
         utils.addLayerToConfig( self.config, self.cfgRoot, item.text( 0 ) )
+
+        layerElement = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
+
+        vLayer = utils.getVectorLayerByName( item.text( 0 ) )
+        vProvider = vLayer.dataProvider()
+
+        # check layer renderer and determine classification field
+        fieldName = None
+        fieldIndex = None
+
+        if vLayer.isUsingRendererV2():
+          renderer = vLayer.rendererV2()
+          rendererType = renderer.type()
+
+          if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+            fieldName = renderer.classAttribute()
+            fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+          elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
+            print "Invalid renderer type! Skip this layer..."
+            item.setCheckState( 0, Qt.Unchecked )
+            return
+        else:
+          renderer = vLayer.renderer()
+          rendererType = renderer.name()
+
+          if rendererType in [ "categorizedSymbol", "Unique Value" ]:
+            fieldIndex = renderer.classificationField()
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          elif rendererType in [ "singleSymbol", "Single Symbol" ]:
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
+            print "Invalid renderer type! Skip this layer..."
+            item.setCheckState( 0, Qt.Unchecked )
+            return
+
+        d = layersettingsdialog.LayerSettingsDialog( self, vLayer )
+
+        d.setAreasReport( utils.hasReport( layerElement, "area" ) )
+        d.setObjectsReport( utils.hasReport( layerElement, "objects" ) )
+        tmp = utils.labelFieldName( layerElement )
+        if tmp.isEmpty():
+          d.setLabelField( fieldName )
+        else:
+          d.setLabelField( tmp )
+
+        d.setComment( utils.layerComment( layerElement ) )
+
+        if not d.exec_() == QDialog.Accepted:
+          item.setCheckState( 0, Qt.Unchecked )
+          return
+
+        # update layer config if necessary
+        if d.areasReport():
+          utils.addLayerReport( self.config, layerElement, "area" )
+        else:
+          utils.removeLayerReport( layerElement, "area" )
+
+        if d.objectsReport():
+          utils.addLayerReport( self.config, layerElement, "objects" )
+        else:
+          utils.removeLayerReport( layerElement, "objects" )
+
+        utils.setLabelFieldName( self.config, layerElement, d.getLabelField() )
+        utils.setLayerComment( self.config, layerElement, d.getComment() )
       else:
         utils.removeLayerFromConfig( self.cfgRoot, item.text( 0 ) )
 
@@ -219,93 +333,313 @@ class ReporterDialog( QDialog, Ui_ReporterDialog ):
         items[ 0 ].setCheckState( 0, Qt.Unchecked )
       self.lstLayers.blockSignals( False )
 
+  def readSettings( self ):
+    settings = QSettings( "NextGIS", "reporter" )
+    self.chkLoadLastProfile.setChecked( settings.value( "loadLastProfile", False ).toBool() )
+    self.chkCreateMaps.setChecked( settings.value( "createMaps", True ).toBool() )
+    self.chkAddMapsToReport.setChecked( settings.value( "mapsInReport", True ).toBool() )
+    if self.chkLoadLastProfile.isChecked():
+      self.lblProfilePath.setText( self.tr( "Config file: %1" ) .arg( settings.value( "lastProfile", "" ).toString() ) )
+    else:
+      self.lblProfilePath.setText( self.tr( "No profile loaded" ) )
+    self.txtComment.setPlainText( settings.value( "comment", "" ).toString() )
+
+    # dimensioning buttons
+    if settings.value( "dimensioning", "none" ).toString() == "none":
+      self.rbSimpleUnits.setChecked( True )
+    elif settings.value( "dimensioning", "none" ).toString() == "kilo":
+      self.rbKiloUnits.setChecked( True )
+    else:
+      self.rbMegaUnits.setChecked( True )
+
+  def saveSettings( self ):
+    settings = QSettings( "NextGIS", "reporter" )
+    settings.setValue( "loadLastProfile", self.chkLoadLastProfile.isChecked() )
+    settings.setValue( "createMaps", self.chkCreateMaps.isChecked() )
+    settings.setValue( "mapsInReport", self.chkAddMapsToReport.isChecked() )
+    if self.lblProfilePath.text().split( ": " ).count() > 1:
+      settings.setValue( "lastProfile", self.lblProfilePath.text().split( ": " )[ 1 ] )
+    settings.setValue( "comment", self.txtComment.toPlainText() )
+
+    # dimensioning buttons
+    if self.rbSimpleUnits.isChecked():
+      settings.setValue( "dimensioning", "none" )
+    elif self.rbKiloUnits.isChecked():
+      settings.setValue( "dimensioning", "kilo" )
+    else:
+      settings.setValue( "dimensioning", "mega" )
+
   def accept( self ):
     if not self.config:
       return
 
+    if self.leOutput.text().isEmpty():
+      QMessageBox.warning( self,
+                           self.tr( "Reporter" ),
+                           self.tr( "Please specify output report file" ) )
+      return
+
     self.cleanupConfigAndGui()
+    self.saveSettings()
 
-    # save settings
-    settings = QSettings( "NextGIS", "reporter" )
-    settings.setValue( "useSelection", self.chkUseSelection.isChecked() )
-
-    # process layers
+    # get layer count
+    layerCount = 0
+    layerNames = []
     for i in xrange( self.lstLayers.topLevelItemCount() ):
       item = self.lstLayers.topLevelItem( i )
       if item.checkState( 0 ) == Qt.Checked:
-        print "PROCESSING", item.text( 0 )
-        cLayer = utils.findLayerInConfig( self.cfgRoot, item.text( 0 ) )
+        layerCount += 1
+        layerNames.append( item.text( 0 ) )
 
-        if utils.hasReport( cLayer, "area" ):
-          print "RUN AREA REPORT"
-          self.areaReport( item.text( 0 ) )
+    self.progressBar.setRange( 0, layerCount )
 
-  def areaReport( self, layerName ):
-    layerA = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
-    providerA = layerA.dataProvider()
+    QApplication.setOverrideCursor( QCursor( Qt.WaitCursor ) )
+    self.btnOk.setEnabled( False )
 
-    layerB = utils.getVectorLayerByName( layerName )
-    providerB = layerB.dataProvider()
+    # ***************** create reports ************************
+    overlayLayer = utils.getVectorLayerByName( self.cmbAnalysisRegion.currentText() )
+    overlayProvider = overlayLayer.dataProvider()
 
-    # determine classification field
-    renderer = None
-    if layerB.isUsingRendererV2():
-      renderer = layerB.rendererV2()
+    isFirst = True
+    mapCRS = self.iface.mapCanvas().mapRenderer().destinationCrs()
+    hasOTFR = self.iface.mapCanvas().hasCrsTransformEnabled()
+    crsTransform = QgsCoordinateTransform( overlayLayer.crs(), mapCRS )
+    needTransform = ( overlayLayer.crs() != mapCRS )
+    dirName = QFileInfo( self.leOutput.text() ).absolutePath()
 
-    if renderer.type() != "categorizedSymbol":
-      print "INVALID RENDERER TYPE"
-      return
-
-    fieldName = renderer.classAttribute()
-    fieldIndex = utils.fieldIndexByName( providerB, fieldName )
-    print "CLASS ATTR", fieldName, fieldIndex
-
-    #~ mLayer = QgsVectorLayer( "Polygon", "tempPoly", "memory" )
-    #~ mProvider = mLayer.dataProvider()
-    #~ mProvider.addAttributes( [ QgsField( "class", QVariant.String ) ] )
-    #~ mLayer.updateFieldMap()
-
-    index = utils.createSpatialIndex( providerB )
-
-    featA = QgsFeature()
-    featB = QgsFeature()
-    outFeat = QgsFeature()
-
-    if self.chkUseSelection.isChecked():
-      pass
+    # get dimensioning coefficient
+    coef = 1.0
+    settings = QSettings( "NextGIS", "reporter" )
+    if settings.value( "dimensioning", "none" ).toString() == "none":
+      coef = 1.0
+    elif settings.value( "dimensioning", "none" ).toString() == "kilo":
+      coef = 0.00001
     else:
-      nFeat = providerA.featureCount()
+      coef = 0.0000001
 
-      while providerA.nextFeature( featA ):
-        rptData = dict()
-        geom = QgsGeometry( featA.geometry() )
-        intersects = index.intersects( geom.boundingBox() )
-        for i in intersects:
-          providerB.featureAtId( int( i ), featB , True, [ fieldIndex ] )
-          tmpGeom = QgsGeometry( featB.geometry() )
+    # variables to store information used in reports
+    dataArea = dict()
+    dataObjects = dict()
 
-          if geom.intersects( tmpGeom ):
-            attrMap = featB.attributeMap()
-            intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
-            if intGeom.wkbType() == 7:
-              intCom = geom.combine( tmpGeom )
-              intSym = geom.symDifference( tmpGeom )
-              intGeom = QgsGeometry( intCom.difference( intSym ) )
+    # init report writer
+    writer = wordmlwriter.WordMLWriter()
 
-            if attrMap[0].toString() not in rptData:
-              rptData[ attrMap[0].toString() ] = intGeom.area()
+    for layerName in layerNames:
+      self.progressBar.setFormat( self.tr( "%p% processing: %1" ).arg( layerName ) )
+      QCoreApplication.processEvents()
+
+      layerElement = utils.findLayerInConfig( self.cfgRoot, layerName )
+      labelFieldName = utils.labelFieldName( layerElement )
+
+      vLayer = utils.getVectorLayerByName( layerName )
+      vProvider = vLayer.dataProvider()
+
+      vProvider.rewind()
+      vProvider.select( vProvider.attributeIndexes() )
+
+      # check layer renderer and determine classification field
+      rendererType = None
+      fieldName = None
+      fieldIndex = None
+      categories = None
+
+      if vLayer.isUsingRendererV2():
+        renderer = vLayer.rendererV2()
+        rendererType = renderer.type()
+        if rendererType in [ "singleSymbol", "Single Symbol" ]:
+          tmp = utils.labelFieldName( layerElement )
+          if tmp.isEmpty():
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
+            fieldName = tmp
+            fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+        elif rendererType in [ "categorizedSymbol", "Unique Value" ]:
+          fieldName = renderer.classAttribute()
+          fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+          categories = renderer.categories()
+        else:
+          print "Invalid renderer type! Skip this layer..."
+          continue
+      else:
+        renderer = vLayer.renderer()
+        rendererType = renderer.name()
+        if rendererType in [ "singleSymbol", "Single Symbol" ]:
+          tmp = utils.labelFieldName( layerElement )
+          if tmp.isEmpty():
+            fieldIndex = 0
+            fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          else:
+            fieldName = tmp
+            fieldIndex = utils.fieldIndexByName( vProvider, fieldName )
+        elif rendererType in [ "categorizedSymbol", "Unique Value" ]:
+          fieldIndex = renderer.classificationField()
+          fieldName = utils.fieldNameByIndex( vProvider, fieldIndex )
+          categories = renderer.symbolMap()
+        else:
+          print "Invalid renderer type! Skip this layer..."
+          continue
+
+      # override fieldIndex using layer from config
+      tryLegendLabels = False
+      attributeIndexes = []
+      labelFieldIndex = utils.fieldIndexByName( vProvider, labelFieldName )
+      if labelFieldIndex == fieldIndex:
+        tryLegendLabels = True
+        attributeIndexes.append( fieldIndex )
+      else:
+        attributeIndexes.append( fieldIndex )
+        attributeIndexes.append( labelFieldIndex )
+
+      # unsupported renderer, process next layer
+      if rendererType not in [ "categorizedSymbol", "Unique Value", "singleSymbol", "Single Symbol" ]:
+        print "Invalid renderer type! Skip this layer..."
+        continue
+
+      # prepare to collect information
+      overlayFeat = QgsFeature()
+      currentFeat = QgsFeature()
+      geom = QgsGeometry()
+
+      spatialIndex = utils.createSpatialIndex( vProvider )
+
+      if overlayLayer.selectedFeatureCount() != 0:
+        sel = overlayLayer.selectedFeaturesIds()
+        overlayProvider.featureAtId( max( sel ), overlayFeat )
+      else:
+        overlayProvider.featureAtId( overlayProvider.featureCount() - 1, overlayFeat )
+
+      dataArea.clear()
+      dataObjects.clear()
+      legendCategories = []
+      featureClass = None
+      category = None
+
+      geom = QgsGeometry( overlayFeat.geometry() )
+      if needTransform:
+        if geom.transform( crsTransform ) != 0:
+          print "Unable transform geometry"
+          continue
+
+      dataArea[ "totalArea" ] = float( geom.area() * coef )
+
+      # find intersections in data layer
+      intersections = spatialIndex.intersects( geom.boundingBox() )
+      for i in intersections:
+        vProvider.featureAtId( int( i ), currentFeat, True, attributeIndexes )
+        tmpGeom = QgsGeometry( currentFeat.geometry() )
+        # precision test for intersection
+        if geom.intersects( tmpGeom ):
+          # get data for area report
+          attrMap = currentFeat.attributeMap()
+          if tryLegendLabels:
+            featureClass = attrMap[ fieldIndex ].toString()
+            if vLayer.isUsingRendererV2():
+              if vLayer.rendererV2().type() in [ "categorizedSymbol", "Unique Value" ]:
+                category = categories[ renderer.categoryIndexForValue( attrMap.values()[ 0 ] ) ].label()
             else:
-              rptData[ attrMap[0].toString() ] += intGeom.area()
+              if vLayer.renderer().name() in [ "categorizedSymbol", "Unique Value" ]:
+                category = categories[ attrMap.values()[ 0 ].toString() ].label()
 
-            #~ outFeat.setGeometry( intGeom )
-            #~ outFeat.setAttributeMap( attrMap )
-            #~ mProvider.addFeatures( [ outFeat ] )
+            if categories is not None:
+              if category.isEmpty():
+                category = featureClass
+              if category not in legendCategories:
+                legendCategories.append( category )
+          else:
+            if categories is not None:
+              category = attrMap[ labelFieldIndex ].toString()
+              tmp = attrMap[ fieldIndex ].toString()
+              if tmp not in legendCategories:
+                legendCategories.append( tmp )
 
-    #~ mLayer.updateExtents()
-    #~ QgsMapLayerRegistry.instance().addMapLayer( mLayer )
-        rptData[ "totalArea" ] = geom.area()
-        print "DATA", rptData
-        odfWriter = odfreportwriter.ODFReportWriter()
-        odfWriter.writeTitle( layerName )
-        odfWriter.writeAreaTable( fieldName, rptData )
-        odfWriter.writeToFile( "/home/alex/test.odt" )
+          # count objects
+          if categories is not None:
+            if category not in dataObjects:
+              dataObjects[ category ] = 1
+            else:
+              dataObjects[ category ] += 1
+          else:
+            if str(fieldName) not in dataObjects:
+              dataObjects[ str(fieldName) ] = 1
+            else:
+              dataObjects[ str(fieldName) ] += 1
+
+          # calculate intersection area
+          intGeom = QgsGeometry( geom.intersection( tmpGeom ) )
+          if intGeom.wkbType() == 7:
+            intCom = geom.combine( tmpGeom )
+            intSym = geom.symDifference( tmpGeom )
+            intGeom = QgsGeometry( intCom.difference( intSym ) )
+
+          if categories is not None:
+            if category not in dataArea:
+              dataArea[ category ] = float( intGeom.area() * coef )
+            else:
+              dataArea[ category ] += float( intGeom.area() * coef )
+          else:
+            if str(fieldName) not in dataArea:
+              dataArea[ str(fieldName) ] = float( intGeom.area() * coef )
+            else:
+              dataArea[ str(fieldName) ] += float( intGeom.area() * coef )
+
+      # get extent of the overlay geometry (for reports)
+      rect = geom.boundingBox()
+      dw = rect.width() * 0.025
+      dh = rect.height() * 0.025
+      rect.setXMinimum( rect.xMinimum() - dw )
+      rect.setXMaximum( rect.xMaximum() + dw )
+      rect.setYMinimum( rect.yMinimum() - dh )
+      rect.setYMaximum( rect.yMaximum() + dh )
+
+      # create map
+      #mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR, dataObjects.keys() )
+      mapImage = utils.createMapImage( overlayLayer, vLayer, rect, mapCRS, hasOTFR, legendCategories )
+
+      # create all necessary reports
+      layerConfig = utils.findLayerInConfig( self.cfgRoot, layerName )
+
+      # add page break after first layer
+      if not isFirst:
+        writer.addPageBreak()
+      isFirst = False
+
+      # print title
+      writer.addTitle( layerName )
+      writer.addDescription( self.txtComment.toPlainText() + " " + utils.layerComment( layerConfig ) )
+
+      if utils.hasReport( layerConfig, "area" ):
+        writer.addAreaTable( fieldName, dataArea )
+
+      if utils.hasReport( layerConfig, "objects" ):
+        writer.addObjectsTable( dataObjects )
+
+      # embed image in report if requested
+      if self.chkAddMapsToReport.isChecked():
+        imgData = QByteArray()
+        buff = QBuffer( imgData )
+        buff.open( QIODevice.WriteOnly )
+        mapImage.save( buff, "png" )
+        writer.addThematicImage( layerName, QString.fromLatin1( imgData.toBase64() ) )
+
+      # save separate map if requested
+      if self.chkCreateMaps.isChecked():
+        mapImage.save( dirName + "/" + layerName + ".png", "png" )
+
+      self.progressBar.setValue( self.progressBar.value() + 1 )
+      QCoreApplication.processEvents()
+
+    # save report to files
+    writer.closeReport()
+    writer.write( self.leOutput.text() )
+
+    # restore UI
+    self.progressBar.setFormat( "%p%" )
+    self.progressBar.setRange( 0, 1 )
+    self.progressBar.setValue( 0 )
+
+    QApplication.restoreOverrideCursor()
+
+    QMessageBox.information( self, self.tr( "Done" ), self.tr( "Completed!" ) )
+
+    self.btnOk.setEnabled( True )

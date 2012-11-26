@@ -6,7 +6,7 @@
 # ---------------------------------------------------------
 # Generates reports.
 #
-# Copyright (C) 2012 Alexander Bruy (alexander.bruy@gmail.com), NextGIS
+# Copyright (C) 2012 NextGIS, http://nextgis.org
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -76,8 +76,8 @@ class ReporterPlugin( object ):
       return None
 
     self.actionRun = QAction( QIcon( ":/icons/reporter.png" ), "Reporter", self.iface.mainWindow() )
-    self.actionRun.setStatusTip( QCoreApplication.translate( "Reporter", "Generates report" ) )
-    self.actionAbout = QAction( QIcon( ":/icons/about.png" ), "About Reporter", self.iface.mainWindow() )
+    self.actionRun.setStatusTip( QCoreApplication.translate( "Reporter", "Generates reports" ) )
+    self.actionAbout = QAction( QIcon( ":/icons/about.png" ), QCoreApplication.translate( "Reporter", "About Reporter" ), self.iface.mainWindow() )
 
     QObject.connect( self.actionRun, SIGNAL( "triggered()" ), self.run )
     QObject.connect( self.actionAbout, SIGNAL( "triggered()" ), self.about )
@@ -111,9 +111,9 @@ class ReporterPlugin( object ):
     ver = QLabel( QApplication.translate( "Reporter", "Version: %1" ).arg( version() ) )
     ver.setAlignment( Qt.AlignHCenter | Qt.AlignVCenter )
     lines.addWidget( ver )
-    lines.addWidget( QLabel( QApplication.translate( "Reporter", "Generates report." ) ) )
+    lines.addWidget( QLabel( QApplication.translate( "Reporter", "Generates reports." ) ) )
     lines.addWidget( QLabel( QApplication.translate( "Reporter", "<b>Developers:</b>" ) ) )
-    lines.addWidget( QLabel( "  Alexander Bruy (NextGIS)" ) )
+    lines.addWidget( QLabel( "  NextGIS, http://nextgis.org" ) )
     lines.addWidget( QLabel( QApplication.translate( "Reporter", "<b>Homepage:</b>") ) )
 
     overrideLocale = QSettings().value( "locale/overrideFlag", QVariant( False ) ).toBool()
@@ -123,10 +123,10 @@ class ReporterPlugin( object ):
       localeFullName = QSettings().value( "locale/userLocale", QVariant( "" ) ).toString()
 
     localeShortName = localeFullName[ 0:2 ]
-    if localeShortName in [ "ru", "uk" ]:
-      link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter.html\">http://gis-lab.info/qa/reporter.html</a>" )
-    else:
-      link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter-eng.html\">http://gis-lab.info/qa/reporter-eng.html</a>" )
+    #if localeShortName in [ "ru", "uk" ]:
+    link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter.html\">http://gis-lab.info/qa/reporter.html</a>" )
+    #else:
+    #  link = QLabel( "<a href=\"http://gis-lab.info/qa/reporter-eng.html\">http://gis-lab.info/qa/reporter-eng.html</a>" )
 
     link.setOpenExternalLinks( True )
     lines.addWidget( link )

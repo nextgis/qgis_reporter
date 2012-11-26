@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?mso-application progid="Word.Document"?>
+<w:wordDocument
+   xmlns:w="http://schemas.microsoft.com/office/word/2003/wordml"
+   xmlns:v="urn:schemas-microsoft-com:vml"
+   xmlns:w10="urn:schemas-microsoft-com:office:word"
+   xmlns:sl="http://schemas.microsoft.com/schemaLibrary/2003/core"
+   xmlns:aml="http://schemas.microsoft.com/aml/2001/core"
+   xmlns:wx="http://schemas.microsoft.com/office/word/2003/auxHint"
+   xmlns:o="urn:schemas-microsoft-com:office:office"
+   xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"
+   w:macrosPresent="no"
+   w:embeddedObjPresent="no"
+   w:ocxPresent="no"
+   xml:space="preserve">
+
+  <o:DocumentProperties>
+    <o:Title>Report</o:Title>
+    <o:Author>Cthulhu</o:Author>
+    <o:Revision>1</o:Revision>
+    <o:Version>11.6568</o:Version>
+  </o:DocumentProperties>
+
+  <w:fonts>
+    <w:defaultFonts w:ascii="Times New Roman" w:fareast="Times New Roman" w:h-ansi="Times New Roman" w:cs="Times New Roman"/>
+  </w:fonts>
+
+  <w:styles>
+    <w:versionOfBuiltInStylenames w:val="4"/>
+    <w:latentStyles w:defLockedState="off" w:latentStyleCount="156"/>
+
+    <w:style w:type="paragraph" w:default="on" w:styleId="a">
+      <w:name w:val="Normal"/>
+      <w:rPr>
+        <wx:font wx:val="Times New Roman"/>
+        <w:sz w:val="24"/>
+        <w:sz-cs w:val="24"/>
+        <w:lang w:val="RU" w:fareast="RU" w:bidi="AR-SA"/>
+      </w:rPr>
+    </w:style>
+
+    <w:style w:type="character" w:default="on" w:styleId="a0">
+      <w:name w:val="Default Paragraph Font"/>
+      <w:semiHidden/>
+    </w:style>
+
+    <w:style w:type="table" w:default="on" w:styleId="a1">
+      <w:name w:val="Normal Table"/>
+      <w:semiHidden/>
+      <w:rPr>
+        <wx:font wx:val="Times New Roman"/>
+      </w:rPr>
+      <w:tblPr>
+        <w:tblInd w:w="0" w:type="dxa"/>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+    </w:style>
+
+    <w:style w:type="list" w:default="on" w:styleId="a2">
+      <w:name w:val="No List"/>
+      <w:semiHidden/>
+    </w:style>
+
+    <w:style w:type="table" w:styleId="MyTable">
+      <w:name w:val="MyTable"/>
+      <w:basedOn w:val="a1"/>
+      <w:rsid w:val="003C40F4"/>
+      <w:pPr>
+       <w:jc w:val="center"/>
+      </w:pPr>
+      <w:rPr>
+        <wx:font wx:val="Times New Roman"/>
+      </w:rPr>
+      <w:tblPr>
+        <w:tblInd w:w="0" w:type="dxa"/>
+        <w:tblBorders>
+          <w:top w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:left w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:bottom w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:right w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:insideH w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:insideV w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+        </w:tblBorders>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+      <w:tcPr>
+        <w:vAlign w:val="center"/>
+      </w:tcPr>
+      <w:tblStylePr w:type="firstRow">
+        <w:pPr>
+          <w:jc w:val="center"/>
+        </w:pPr>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
+        <w:tblPr/>
+        <w:tcPr>
+          <w:vAlign w:val="center"/>
+        </w:tcPr>
+      </w:tblStylePr>
+    </w:style>
+
+    <w:style w:type="table" w:styleId="a3">
+      <w:name w:val="Table Grid"/>
+      <w:basedOn w:val="a1"/>
+      <w:rsid w:val="003C40F4"/>
+      <w:rPr>
+        <wx:font wx:val="Times New Roman"/>
+      </w:rPr>
+      <w:tblPr>
+        <w:tblInd w:w="0" w:type="dxa"/>
+        <w:tblBorders>
+          <w:top w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:left w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:bottom w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:right w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:insideH w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+          <w:insideV w:val="single" w:sz="4" wx:bdrwidth="10" w:space="0" w:color="auto"/>
+        </w:tblBorders>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+    </w:style>
+  </w:styles>
+
+  <w:docPr>
+    <w:view w:val="print"/>
+    <w:zoom w:val="best-fit" w:percent="123"/>
+    <w:doNotEmbedSystemFonts/>
+    <w:proofState w:spelling="clean" w:grammar="clean"/>
+    <w:attachedTemplate w:val=""/>
+    <w:defaultTabStop w:val="708"/>
+    <w:punctuationKerning/>
+    <w:characterSpacingControl w:val="DontCompress"/>
+    <w:optimizeForBrowser/>
+    <w:validateAgainstSchema/>
+    <w:saveInvalidXML w:val="off"/>
+    <w:ignoreMixedContent w:val="off"/>
+    <w:alwaysShowPlaceholderText w:val="off"/>
+    <w:compat>
+      <w:breakWrappedTables/>
+      <w:snapToGridInCell/>
+      <w:wrapTextWithPunct/>
+      <w:useAsianBreakRules/>
+      <w:dontGrowAutofit/>
+    </w:compat>
+  </w:docPr>
+
+  <w:body>
+    <wx:sect>

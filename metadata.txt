@@ -2,18 +2,18 @@
 name = Reporter
 description = Generates reports
 category = Vector
-version = 0.0.1
+version = 1.0.0
 qgisMinimumVersion = 1.0.0
 
 icon = icons/reporter.png
 
-authorName=Alexander Bruy (NextGIS)
+authorName = NextGIS
 
 tags=vector, reports
 
-homepage = http://gis-lab.info/qa/reporter-eng.html
-tracker = http://hub.qgis.org/projects/reporter
-repository = http://github.com/alexbruy/reporter
+homepage =
+tracker =
+repository =
 
 experimental = True
 deprecated = False

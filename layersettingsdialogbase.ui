@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>291</width>
-    <height>130</height>
+    <height>212</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,11 +29,24 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="chkOtherData">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Some another data</string>
+      <string>Label table row using values of this field</string>
      </property>
     </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="cmbLabelField"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Comment</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="leComment"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
